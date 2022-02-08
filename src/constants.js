@@ -1,9 +1,11 @@
 const constants = {
+    // ASPECT RATIO
+    aspectRatioWidth: 16,
+    aspectRatioHeight: 9,
+
     // GRID
-    gridX: 4,
-    gridZ: 4,
-    gridY: 12,
-    cellSize: 10,
+    gridX: 32,
+    gridY: 18,
 };
 
 export default constants;

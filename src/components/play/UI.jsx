@@ -24,11 +24,14 @@ export default function UI() {
     //   RENDER
     // #################################################
 
-    const { height, width } = gameDimensions;
+    const { windowHeight, windowWidth, height, width, left, top } = gameDimensions;
 
     return (
         <div className="UI">
-            <div className="gameContainer" style={{ height: `${height}px`, width: `${width}px` }}></div>
+            <div
+                className="gameContainer"
+                style={{ height: `${height}px`, width: `${width}px`, left: `${left}px`, top: `${top}px` }}
+            ></div>
         </div>
     );
 }

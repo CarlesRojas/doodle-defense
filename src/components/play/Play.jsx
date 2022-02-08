@@ -1,19 +1,27 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useContext, useCallback } from "react";
 
 import UI from "./UI";
+import Controller from "../../game/Controller";
 
 import useResize from "../../hooks/useResize";
 
+import { GlobalState } from "../../contexts/GlobalState";
+
 export default function Play() {
+    const globalState = useContext(GlobalState);
+
     const container = useRef();
+    const controller = useRef();
 
     // #################################################
     //   RESIZE
     // #################################################
 
     const handleResize = () => {
-        // const width = container.current.clientWidth;
-        // const height = container.current.clientHeight;
+        const width = container.current.clientWidth;
+        const height = container.current.clientHeight;
+
+        controller.current.handleResize({ width, height });
     };
 
     useResize(handleResize, false);
@@ -23,9 +31,11 @@ export default function Play() {
     // #################################################
 
     const init = useCallback(() => {
-        // const width = container.current.clientWidth;
-        // const height = container.current.clientHeight;
-    }, []);
+        const width = container.current.clientWidth;
+        const height = container.current.clientHeight;
+
+        controller.current = new Controller({ container, state: globalState, width, height });
+    }, [globalState]);
 
     useEffect(() => {
         init();
