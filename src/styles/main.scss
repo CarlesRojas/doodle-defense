@@ -1,0 +1,90 @@
+@import "./variables";
+@import "./global";
+@import "./desktop";
+@import "./tablet";
+@import "./landscape";
+@import "./notTouchscreen";
+@import "./animations";
+
+// #######################################
+//      LAYOUT
+// #######################################
+
+.Portrait {
+    pointer-events: none;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background-color: rgb(255, 253, 159);
+}
+
+.MainLayout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.Play {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+
+    .playContainer {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+    }
+}
+
+.UI {
+    pointer-events: none;
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+
+    .gameContainer {
+        position: relative;
+    }
+}
+
+h1 {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    font-weight: 800;
+    text-align: center;
+}
+
+p {
+    width: 100%;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+}
