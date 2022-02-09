@@ -66,18 +66,42 @@ export default class Loader {
     constructor(global, handleComplete) {
         this.global = global;
 
-        // AOE
+        this.#loadAreaOfEffect();
+        this.#loadBackground();
+        this.#loadCards();
+        this.#loadEffects();
+        this.#loadEnemies();
+        this.#loadModifiers();
+        this.#loadPlaza();
+        this.#loadSkills();
+        this.#loadStructures();
+        this.#loadTrack();
+
+        this.global.app.loader.onProgress.add(this.#handleProgress.bind(this));
+        this.global.app.loader.onComplete.add(handleComplete);
+        this.global.app.loader.onError.add(this.#handleError.bind(this));
+
+        this.global.app.loader.load();
+    }
+
+    // #################################################
+    //   MODULES
+    // #################################################
+
+    #loadAreaOfEffect() {
         this.global.app.loader.add("aoe_corner", AOE_Corner);
         this.global.app.loader.add("aoe_doublePoint", AOE_DoublePoint);
         this.global.app.loader.add("aoe_end", AOE_End);
         this.global.app.loader.add("aoe_full", AOE_Full);
         this.global.app.loader.add("aoe_point", AOE_Point);
         this.global.app.loader.add("aoe_straight", AOE_Straight);
+    }
 
-        // BACKGROUND
+    #loadBackground() {
         this.global.app.loader.add("background", Background);
+    }
 
-        // CARDS
+    #loadCards() {
         this.global.app.loader.add("card_structureCommon", Card_StructureCommon);
         this.global.app.loader.add("card_structureEpic", Card_StructureEpic);
         this.global.app.loader.add("card_structureRare", Card_StructureRare);
@@ -90,19 +114,22 @@ export default class Loader {
         this.global.app.loader.add("card_modifierEpic", Card_ModifierEpic);
         this.global.app.loader.add("card_modifierRare", Card_ModifierRare);
         this.global.app.loader.add("card_modifierLegendary", Card_ModifierLegendary);
+    }
 
-        // EFFECTS
+    #loadEffects() {
         this.global.app.loader.add("effect_bolt", Effect_Bolt);
+    }
 
-        // ENEMIES
+    #loadEnemies() {
         this.global.app.loader.add("enemy_rogue", Enemy_Rogue);
         this.global.app.loader.add("enemy_skeleton", Enemy_Skeleton);
         this.global.app.loader.add("enemy_soldier", Enemy_Soldier);
         this.global.app.loader.add("enemy_wolf", Enemy_Wolf);
+    }
 
-        // MODIFIERS
+    #loadModifiers() {}
 
-        // PLAZA
+    #loadPlaza() {
         this.global.app.loader.add("plaza_bottomLeft", Plaza_BottomLeft);
         this.global.app.loader.add("plaza_bottomRight", Plaza_BottomRight);
         this.global.app.loader.add("plaza_horizontalBottom", Plaza_HorizontalBottom);
@@ -115,26 +142,23 @@ export default class Loader {
         this.global.app.loader.add("plaza_topRight", Plaza_TopRight);
         this.global.app.loader.add("plaza_verticalLeft", Plaza_VerticalLeft);
         this.global.app.loader.add("plaza_verticalRight", Plaza_VerticalRight);
+    }
 
-        // SKILLS
+    #loadSkills() {
         this.global.app.loader.add("skill_fortify", Skill_Fortify);
+    }
 
-        // STRUCTURES
+    #loadStructures() {
         this.global.app.loader.add("structure_ballista", Structure_Ballista);
+    }
 
-        // TRACK
+    #loadTrack() {
         this.global.app.loader.add("track_bottomLeft", Track_BottomLeft);
         this.global.app.loader.add("track_bottomRight", Track_BottomRight);
         this.global.app.loader.add("track_horizontal", Track_Horizontal);
         this.global.app.loader.add("track_topLeft", Track_TopLeft);
         this.global.app.loader.add("track_topRight", Track_TopRight);
         this.global.app.loader.add("track_vertical", Track_Vertical);
-
-        this.global.app.loader.onProgress.add(this.#handleProgress.bind(this));
-        this.global.app.loader.onComplete.add(handleComplete);
-        this.global.app.loader.onError.add(this.#handleError.bind(this));
-
-        this.global.app.loader.load();
     }
 
     // #################################################
