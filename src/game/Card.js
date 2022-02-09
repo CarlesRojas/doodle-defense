@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js";
 import MultiStyleText from "pixi-multistyle-text";
 import CARDS from "./lists/cards";
-import { capitalizeFirstLetter } from "./Utils";
+import { capitalizeFirstLetter, degToRad } from "./Utils";
 
 const CARD_WIDTH = 2.5; // CARD_WIDTH * cellsize = card width px
 const ENTERING_SPEED = 40; // 1 cellsizes per second
@@ -28,24 +28,31 @@ export default class Card {
             type: null,
             description: null,
         };
+
+        // INITIAL VALUES
         this.initialWidth = { art: 0, card: 0, mana: 0 };
+        this.initialHeight = { card: 0 };
 
         // ANIMATION
         this.animating = false;
         this.targetPosition = { x: 0, y: this.global.app.screen.height };
-        this.targetRotation = 0;
+        this.targetAngleInDeg = 0;
         this.targetScale = 0;
         this.drawingCard = true;
         this.discardingCard = false;
 
         // CONTAINER
         this.container = new PIXI.Container();
-        this.container.angle = this.targetRotation;
+        this.container.rotation = degToRad(this.targetAngleInDeg);
         this.container.position.set(this.targetPosition.x, this.targetPosition.y);
         this.container.scale.set(this.targetScale);
         this.container.zIndex = handPosition;
-        this.container.interactive = true;
+        this.container.interactive = false;
         this.handContainer.addChild(this.container);
+
+        // HIGHLIGHT
+        this.isHighlighted = false;
+        this.highlightedCard = -1;
 
         // CREATE CARD
         this.#instantiateCard();
@@ -54,6 +61,7 @@ export default class Card {
         this.container.addEventListener("pointerenter", this.#handlePointerEnter.bind(this));
         this.container.addEventListener("pointerleave", this.#handlePointerLeave.bind(this));
         this.container.addEventListener("click", this.#handleClick.bind(this));
+        this.global.events.sub("highlightCard", this.#highlightCard.bind(this));
     }
 
     destructor() {
@@ -61,6 +69,7 @@ export default class Card {
         this.container.removeEventListener("pointerenter", this.#handlePointerEnter.bind(this));
         this.container.removeEventListener("pointerleave", this.#handlePointerLeave.bind(this));
         this.container.removeEventListener("click", this.#handleClick.bind(this));
+        this.global.events.unsub("highlightCard", this.#highlightCard.bind(this));
     }
 
     #instantiateCard() {
@@ -91,6 +100,7 @@ export default class Card {
         this.elements.card = PIXI.Sprite.from(this.global.app.loader.resources[this.#getCardID()].texture);
         this.elements.card.anchor.set(0.5);
         this.initialWidth.card = this.elements.card.width;
+        this.initialHeight.card = this.elements.card.height;
 
         // ART
         this.elements.art = PIXI.Sprite.from(this.global.app.loader.resources[artID].texture);
@@ -167,15 +177,27 @@ export default class Card {
     // #################################################
 
     #handlePointerEnter() {
-        console.log(`enter card: ${this.handPosition}`);
+        // console.log(`enter card: ${this.handPosition}`);
+
+        this.global.events.emit("highlightCard", this.handPosition);
     }
 
     #handlePointerLeave() {
-        console.log(`leave card: ${this.handPosition}`);
+        // console.log(`leave card: ${this.handPosition}`);
     }
 
     #handleClick() {
-        console.log(`click card: ${this.handPosition}`);
+        if (this.isHighlighted) this.global.events.emit("highlightCard", -1);
+        else this.global.events.emit("highlightCard", this.handPosition);
+        // console.log(`click card: ${this.handPosition}`);
+    }
+
+    #highlightCard(index) {
+        this.isHighlighted = index === this.handPosition;
+        this.highlightedCard = index;
+
+        // Animate back
+        this.#updateTargetPosition();
     }
 
     // #################################################
@@ -246,8 +268,6 @@ export default class Card {
         };
         this.elements.description.y = cardScaleFactor * 54.5;
 
-        // this.container.hitArea = new PIXI.Rectangle(0, 0, this.container.width / 2, this.container.height / 2);
-
         this.#updateTargetPosition();
     }
 
@@ -279,20 +299,29 @@ export default class Card {
         const overlap = Math.min(0.75, Math.max(0.25, 0.05 * this.totalCardsInHand));
         const heightDisp = 0.5 / middleCard;
 
+        const cardRatio = this.initialHeight.card / this.initialWidth.card;
+
         this.targetPosition = {
             x:
-                this.global.app.screen.width / 2 +
-                currentCardDisp * cellSize * CARD_WIDTH * (1 - overlap) +
-                (evenCards ? (cellSize * CARD_WIDTH * (1 - overlap)) / 2 : 0),
+                this.global.app.screen.width / 2 + // Middle of horizontal screen
+                currentCardDisp * cellSize * CARD_WIDTH * (1 - overlap) + // Displace left or right to spread the cards
+                (evenCards ? (cellSize * CARD_WIDTH * (1 - overlap)) / 2 : 0) + // If the cards are even, no card in the middle
+                (this.highlightedCard >= 0 && this.handPosition !== this.highlightedCard
+                    ? cellSize * CARD_WIDTH * (overlap + 0.15) * (this.handPosition < this.highlightedCard ? -1 : 1)
+                    : 0), // displace if there is a card selected to give it space
             y:
-                this.global.app.screen.height -
-                cellSize * 0.5 +
-                Math.abs(currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0)) * cellSize * heightDisp,
+                this.global.app.screen.height + // Bottom of the screen
+                (this.isHighlighted
+                    ? -(cellSize * CARD_WIDTH * cardRatio * 0.75)
+                    : -cellSize * 0.5 +
+                      Math.abs(currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0)) * cellSize * heightDisp), // Move down the further away
         };
 
-        this.targetRotation = (10 / middleCard) * (currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0));
+        this.targetAngleInDeg = this.isHighlighted
+            ? 0
+            : (10 / middleCard) * (currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0));
 
-        this.targetScale = 1;
+        this.targetScale = this.isHighlighted ? 1.2 : 1;
     }
 
     #animateCard(deltaTime) {
@@ -314,12 +343,13 @@ export default class Card {
             this.container.y = Math.min(this.targetPosition.y, this.container.y + step);
 
         // ANIMATE ROTATION
-        const rotationStep = speed * 5 * deltaTime;
+        const rotationStep = speed * 0.1 * deltaTime;
+        const angleInRad = degToRad(this.targetAngleInDeg);
 
-        if (this.container.angle > this.targetRotation)
-            this.container.angle = Math.max(this.targetRotation, this.container.angle - rotationStep);
-        else if (this.container.angle < this.targetRotation)
-            this.container.angle = Math.min(this.targetRotation, this.container.angle + rotationStep);
+        if (this.container.rotation > angleInRad)
+            this.container.rotation = Math.max(angleInRad, this.container.rotation - rotationStep);
+        else if (this.container.rotation < angleInRad)
+            this.container.rotation = Math.min(angleInRad, this.container.rotation + rotationStep);
 
         // ANIMATE SCALE
         const scaleStep = speed * 0.0875 * deltaTime;
@@ -340,8 +370,8 @@ export default class Card {
             this.container.x < this.targetPosition.x ||
             this.container.y > this.targetPosition.y ||
             this.container.y < this.targetPosition.y ||
-            this.container.angle > this.targetRotation ||
-            this.container.angle < this.targetRotation ||
+            this.container.rotation > angleInRad ||
+            this.container.rotation < angleInRad ||
             this.container.scale.x > this.targetScale ||
             this.container.scale.x < this.targetScale ||
             this.container.scale.y > this.targetScale ||
@@ -360,6 +390,7 @@ export default class Card {
         // When the card finishes the draw animation
         if (!this.animating && this.drawingCard) {
             this.drawingCard = false;
+            this.container.interactive = true;
             this.global.events.emit("cardDrawn");
         }
 
