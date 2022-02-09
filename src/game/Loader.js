@@ -1,5 +1,5 @@
-import WolfSprite from "../resources/Wolf.png";
-import BackgroundSprite from "../resources/Background.png";
+import WolfSprite from "../resources/sprites/enemies/Wolf.png";
+import BackgroundSprite from "../resources/sprites/background/Background.png";
 
 export default class Loader {
     constructor(global, handleComplete) {
