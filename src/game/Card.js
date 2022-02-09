@@ -60,7 +60,7 @@ export default class Card {
         // SUB TO EVENTS
         this.container.addEventListener("pointerenter", this.#handlePointerEnter.bind(this));
         this.container.addEventListener("pointerleave", this.#handlePointerLeave.bind(this));
-        this.container.addEventListener("click", this.#handleClick.bind(this));
+        this.container.addEventListener("pointerup", this.#handlePointerUp.bind(this));
         this.global.events.sub("highlightCard", this.#highlightCard.bind(this));
     }
 
@@ -68,7 +68,7 @@ export default class Card {
         // UNSUB TFROM EVENTS
         this.container.removeEventListener("pointerenter", this.#handlePointerEnter.bind(this));
         this.container.removeEventListener("pointerleave", this.#handlePointerLeave.bind(this));
-        this.container.removeEventListener("click", this.#handleClick.bind(this));
+        this.container.removeEventListener("pointerup", this.#handlePointerUp.bind(this));
         this.global.events.unsub("highlightCard", this.#highlightCard.bind(this));
     }
 
@@ -186,7 +186,7 @@ export default class Card {
         // console.log(`leave card: ${this.handPosition}`);
     }
 
-    #handleClick() {
+    #handlePointerUp() {
         if (this.isHighlighted) this.global.events.emit("highlightCard", -1);
         else this.global.events.emit("highlightCard", this.handPosition);
         // console.log(`click card: ${this.handPosition}`);
