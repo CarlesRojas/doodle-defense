@@ -1,10 +1,5 @@
-// AOE
-import AOE_Corner from "../resources/sprites/aoe/AOE_Corner.png";
-import AOE_DoublePoint from "../resources/sprites/aoe/AOE_DoublePoint.png";
-import AOE_End from "../resources/sprites/aoe/AOE_End.png";
-import AOE_Full from "../resources/sprites/aoe/AOE_Full.png";
-import AOE_Point from "../resources/sprites/aoe/AOE_Point.png";
-import AOE_Straight from "../resources/sprites/aoe/AOE_Straight.png";
+import * as PIXI from "pixi.js";
+import FontFaceObserver from "fontfaceobserver";
 
 // BACKGROUND
 import Background from "../resources/sprites/background/Background.png";
@@ -62,11 +57,22 @@ import Track_TopLeft from "../resources/sprites/track/Track_TopLeft.png";
 import Track_TopRight from "../resources/sprites/track/Track_TopRight.png";
 import Track_Vertical from "../resources/sprites/track/Track_Vertical.png";
 
+// UTILS
+import Util_Border from "../resources/sprites/utils/Border.png";
+
 export default class Loader {
     constructor(global, handleComplete) {
         this.global = global;
+        this.handleComplete = handleComplete;
 
-        this.#loadAreaOfEffect();
+        PIXI.utils.clearTextureCache();
+
+        this.loaded = {
+            fonts: false,
+            sprites: false,
+        };
+
+        this.#loadFonts();
         this.#loadBackground();
         this.#loadCards();
         this.#loadEffects();
@@ -76,26 +82,53 @@ export default class Loader {
         this.#loadSkills();
         this.#loadStructures();
         this.#loadTrack();
+        this.#loadUtils();
 
-        this.global.app.loader.onProgress.add(this.#handleProgress.bind(this));
-        this.global.app.loader.onComplete.add(handleComplete);
-        this.global.app.loader.onError.add(this.#handleError.bind(this));
+        this.global.app.loader.onProgress.add(this.#handleLoadProgress.bind(this));
+        this.global.app.loader.onComplete.add(this.#handleLoadComplete.bind(this));
+        this.global.app.loader.onError.add(this.#handleLoadError.bind(this));
 
         this.global.app.loader.load();
     }
 
     // #################################################
-    //   MODULES
+    //   PROGRESS
     // #################################################
 
-    #loadAreaOfEffect() {
-        this.global.app.loader.add("aoe_corner", AOE_Corner);
-        this.global.app.loader.add("aoe_doublePoint", AOE_DoublePoint);
-        this.global.app.loader.add("aoe_end", AOE_End);
-        this.global.app.loader.add("aoe_full", AOE_Full);
-        this.global.app.loader.add("aoe_point", AOE_Point);
-        this.global.app.loader.add("aoe_straight", AOE_Straight);
+    #handleLoadProgress({ progress }, { name }) {
+        // console.log(`${progress.toFixed(2)}% - ${name}`);
     }
+
+    #handleLoadError(error) {
+        // console.log(error);
+    }
+
+    #handleLoadComplete() {
+        this.loaded.sprites = true;
+        const finishedLoading = Object.values(this.loaded).reduce((prev, curr) => prev && curr, true);
+        if (finishedLoading) this.handleComplete();
+    }
+
+    // #################################################
+    //   FONT
+    // #################################################
+
+    async #loadFonts() {
+        var handFont = new FontFaceObserver("Hand");
+        await handFont.load();
+
+        this.#handleLoadFontsComplete();
+    }
+
+    #handleLoadFontsComplete() {
+        this.loaded.fonts = true;
+        const finishedLoading = Object.values(this.loaded).reduce((prev, curr) => prev && curr, true);
+        if (finishedLoading) this.handleComplete();
+    }
+
+    // #################################################
+    //   MODULES
+    // #################################################
 
     #loadBackground() {
         this.global.app.loader.add("background", Background);
@@ -103,16 +136,16 @@ export default class Loader {
 
     #loadCards() {
         this.global.app.loader.add("card_structureCommon", Card_StructureCommon);
-        this.global.app.loader.add("card_structureEpic", Card_StructureEpic);
         this.global.app.loader.add("card_structureRare", Card_StructureRare);
+        this.global.app.loader.add("card_structureEpic", Card_StructureEpic);
         this.global.app.loader.add("card_structureLegendary", Card_StructureLegendary);
         this.global.app.loader.add("card_skillCommon", Card_SkillCommon);
-        this.global.app.loader.add("card_skillEpic", Card_SkillEpic);
         this.global.app.loader.add("card_skillRare", Card_SkillRare);
+        this.global.app.loader.add("card_skillEpic", Card_SkillEpic);
         this.global.app.loader.add("card_skillLegendary", Card_SkillLegendary);
         this.global.app.loader.add("card_modifierCommon", Card_ModifierCommon);
-        this.global.app.loader.add("card_modifierEpic", Card_ModifierEpic);
         this.global.app.loader.add("card_modifierRare", Card_ModifierRare);
+        this.global.app.loader.add("card_modifierEpic", Card_ModifierEpic);
         this.global.app.loader.add("card_modifierLegendary", Card_ModifierLegendary);
     }
 
@@ -161,15 +194,7 @@ export default class Loader {
         this.global.app.loader.add("track_vertical", Track_Vertical);
     }
 
-    // #################################################
-    //   RESIZE
-    // #################################################
-
-    #handleProgress({ progress }, { name }) {
-        console.log(`${progress.toFixed(2)}% - ${name}`);
-    }
-
-    #handleError(error) {
-        // console.log(error);
+    #loadUtils() {
+        this.global.app.loader.add("util_border", Util_Border);
     }
 }

@@ -1,5 +1,11 @@
 @import "./variables";
 
+@font-face {
+    font-family: "Hand";
+    font-weight: normal;
+    src: local("IsaacGame"), url("../resources/fonts/Hand.ttf") format("truetype");
+}
+
 * {
     box-sizing: border-box;
     margin: 0;

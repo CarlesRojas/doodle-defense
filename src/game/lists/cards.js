@@ -1,6 +1,7 @@
-export const CARDS = [
-    {
+const CARDS = {
+    ballista: {
         id: "ballista",
+        type: "structure",
         name: ["Ballista", "Ballista +"],
         artID: "structure_ballista",
         mana: [1, 1],
@@ -11,18 +12,19 @@ export const CARDS = [
         popups: [null, null],
         rarity: 0,
     },
-    {
+    fortify: {
         id: "fortify",
+        type: "skill",
         name: ["Fortify", "Fortify +"],
         artID: "skill_fortify",
         mana: [1, 1],
-        text: ["Add 1 Fortification to your tower.", "Add 2 Fortification to your tower."],
+        text: [
+            "Add 1 <highlight>Fortification</highlight> to your tower.",
+            "Add 2 <highlight>Fortification</highlight> to your tower.",
+        ],
         popups: ["Fortification", "Fortification"],
         rarity: 0,
     },
-];
-
-export const CARDS_DICT = {
-    ballista: 0,
-    fortify: 1,
 };
+
+export default CARDS;

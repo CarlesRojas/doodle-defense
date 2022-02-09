@@ -3,9 +3,12 @@ import GameContainer from "./GameContainer";
 import Loader from "./Loader";
 import constants from "../constants";
 import Background from "./Background";
+import Deck from "./Deck";
 
 export default class Controller {
     constructor({ container, state, width, height }) {
+        PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+
         this.global = {
             state,
             app: new PIXI.Application({
@@ -23,12 +26,14 @@ export default class Controller {
         this.#getGameDimensions({ width, height });
 
         this.addViewToWindow(container);
+
         this.global.loader = new Loader(this.global, this.#handleLoadingComplete.bind(this));
     }
 
     #handleLoadingComplete() {
         this.global.containers.background = new Background(this.global);
         this.global.containers.game = new GameContainer(this.global);
+        this.global.containers.deck = new Deck(this.global);
         this.global.app.ticker.add(this.#gameLoop.bind(this));
     }
 
@@ -49,6 +54,7 @@ export default class Controller {
     handleResize({ width, height }) {
         this.global.app.renderer.resize(width, height);
         this.#getGameDimensions({ width, height });
+
         for (const value of Object.values(this.global.containers)) value.handleResize();
     }
 
