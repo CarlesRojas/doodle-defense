@@ -7,7 +7,7 @@ export default class GameContainer {
         this.container = new PIXI.Container();
         this.global.app.stage.addChild(this.container);
 
-        this.wolf = PIXI.Sprite.from(this.global.app.loader.resources.sprite_enemy_wolf.texture);
+        this.wolf = PIXI.Sprite.from(this.global.app.loader.resources.enemy_wolf.texture);
         // this.wolf.anchor.set(0.5);
         this.handleResize();
         this.container.addChild(this.wolf);
