@@ -4,7 +4,7 @@ const CARDS = {
         type: "structure",
         name: ["Ballista", "Ballista +"],
         artID: "structure_ballista",
-        mana: [1, 1],
+        mana: [4, 1],
         text: [
             "Fire a bolt every second. Each bolt deals 1 damage.",
             "Fire a bolt every second. Each bolt deals 2 damage.",
@@ -17,7 +17,7 @@ const CARDS = {
         type: "skill",
         name: ["Fortify", "Fortify +"],
         artID: "skill_fortify",
-        mana: [1, 1],
+        mana: [5, 1],
         text: [
             "Add 1 <highlight>Fortification</highlight> to your tower.",
             "Add 2 <highlight>Fortification</highlight> to your tower.",

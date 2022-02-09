@@ -23,11 +23,12 @@ export default class Card {
             artBorder: null,
             card: null,
             mana: null,
+            manaNumber: null,
             name: null,
             type: null,
             description: null,
         };
-        this.initialWidth = { art: 0, card: 0 };
+        this.initialWidth = { art: 0, card: 0, mana: 0 };
 
         // ANIMATION
         this.animating = false;
@@ -43,13 +44,24 @@ export default class Card {
         this.container.position.set(this.targetPosition.x, this.targetPosition.y);
         this.container.scale.set(this.targetScale);
         this.container.zIndex = handPosition;
+        this.container.interactive = true;
         this.handContainer.addChild(this.container);
 
         // CREATE CARD
         this.#instantiateCard();
+
+        // SUB TO EVENTS
+        this.container.addEventListener("pointerenter", this.#handlePointerEnter.bind(this));
+        this.container.addEventListener("pointerleave", this.#handlePointerLeave.bind(this));
+        this.container.addEventListener("click", this.#handleClick.bind(this));
     }
 
-    destructor() {}
+    destructor() {
+        // UNSUB TFROM EVENTS
+        this.container.removeEventListener("pointerenter", this.#handlePointerEnter.bind(this));
+        this.container.removeEventListener("pointerleave", this.#handlePointerLeave.bind(this));
+        this.container.removeEventListener("click", this.#handleClick.bind(this));
+    }
 
     #instantiateCard() {
         const { type, name, artID, mana, text } = this.cardInfo;
@@ -93,8 +105,13 @@ export default class Card {
         this.elements.name.anchor.set(0.5);
 
         // MANA
-        this.elements.mana = new PIXI.Text(mana[this.level], blackTextStyle);
+        this.elements.mana = PIXI.Sprite.from(this.global.app.loader.resources.card_mana.texture);
         this.elements.mana.anchor.set(0.5);
+        this.initialWidth.mana = this.elements.mana.width;
+
+        // MANA NUMBER
+        this.elements.manaNumber = new PIXI.Text(mana[this.level], blackTextStyle);
+        this.elements.manaNumber.anchor.set(0.5);
 
         // TYPE
         this.elements.type = new PIXI.Text(capitalizeFirstLetter(type), blackTextStyle);
@@ -112,6 +129,7 @@ export default class Card {
         // this.container.addChild(this.elements.artBorder);
         this.container.addChild(this.elements.name);
         this.container.addChild(this.elements.mana);
+        this.container.addChild(this.elements.manaNumber);
         this.container.addChild(this.elements.type);
         this.container.addChild(this.elements.description);
 
@@ -145,6 +163,22 @@ export default class Card {
     }
 
     // #################################################
+    //   HOVER A CARD
+    // #################################################
+
+    #handlePointerEnter() {
+        console.log(`enter card: ${this.handPosition}`);
+    }
+
+    #handlePointerLeave() {
+        console.log(`leave card: ${this.handPosition}`);
+    }
+
+    #handleClick() {
+        console.log(`click card: ${this.handPosition}`);
+    }
+
+    // #################################################
     //   RESIZE
     // #################################################
 
@@ -154,11 +188,10 @@ export default class Card {
         // Card
         const cardScaleFactor = (cellSize * CARD_WIDTH) / this.initialWidth.card;
         this.elements.card.scale.set(cardScaleFactor);
-        this.elements.card.x = -cardScaleFactor * 1;
         this.elements.card.y = cardScaleFactor * 14;
 
         // Art
-        const artScaleFactor = (cellSize * (CARD_WIDTH / 2)) / this.initialWidth.art;
+        const artScaleFactor = (cellSize * (CARD_WIDTH * 0.5)) / this.initialWidth.art;
         this.elements.artBorder.scale.set(artScaleFactor);
         this.elements.art.scale.set(artScaleFactor);
 
@@ -168,16 +201,24 @@ export default class Card {
             strokeThickness: cardScaleFactor * 1.5,
             fontSize: cardScaleFactor * 8,
         };
-        this.elements.name.y = -cardScaleFactor * 39;
+        this.elements.name.y = -cardScaleFactor * 40;
 
         // Mana
-        this.elements.mana.style = {
-            ...this.elements.mana.style,
+        const manaScaleFactor = (cellSize * (CARD_WIDTH * 0.22)) / this.initialWidth.mana;
+        this.elements.mana.scale.set(manaScaleFactor);
+        this.elements.mana.interactive = false;
+        this.elements.mana.x = -manaScaleFactor * 33;
+        this.elements.mana.y = -manaScaleFactor * 40;
+
+        // Mana number
+        this.elements.manaNumber.style = {
+            ...this.elements.manaNumber.style,
             strokeThickness: cardScaleFactor * 0.3,
             fontSize: cardScaleFactor * 10,
         };
-        this.elements.mana.y = -cardScaleFactor * 39.5;
-        this.elements.mana.x = -cardScaleFactor * 33.3;
+        this.elements.manaNumber.interactive = false;
+        this.elements.manaNumber.y = -cardScaleFactor * 39.5;
+        this.elements.manaNumber.x = -cardScaleFactor * 33.3;
 
         // Type
         this.elements.type.style = {
@@ -185,7 +226,7 @@ export default class Card {
             strokeThickness: cardScaleFactor * 0.2,
             fontSize: cardScaleFactor * 5,
         };
-        this.elements.type.y = cardScaleFactor * 34.6;
+        this.elements.type.y = cardScaleFactor * 34.3;
 
         // Description
         this.elements.description.textStyles.default = {
@@ -203,7 +244,9 @@ export default class Card {
             wordWrap: true,
             wordWrapWidth: cellSize * 1.9,
         };
-        this.elements.description.y = cardScaleFactor * 55;
+        this.elements.description.y = cardScaleFactor * 54.5;
+
+        // this.container.hitArea = new PIXI.Rectangle(0, 0, this.container.width / 2, this.container.height / 2);
 
         this.#updateTargetPosition();
     }

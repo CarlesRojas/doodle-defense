@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@pixi/events": "^6.2.2",
         "@use-gesture/react": "^10.2.4",
         "autoprefixer": "^10.4.2",
         "chroma-js": "^2.3.0",

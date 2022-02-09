@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+import { EventSystem } from "@pixi/events";
 import GameContainer from "./GameContainer";
 import Loader from "./Loader";
 import constants from "../constants";
@@ -8,6 +9,7 @@ import Deck from "./Deck";
 export default class Controller {
     constructor({ container, state, events, width, height }) {
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+        delete PIXI.Renderer.__plugins.interaction;
 
         this.global = {
             state,
@@ -24,6 +26,7 @@ export default class Controller {
             gameDimensions: null,
         };
 
+        this.#enableInteraction();
         this.#getGameDimensions({ width, height });
 
         this.addViewToWindow(container);
@@ -49,7 +52,9 @@ export default class Controller {
 
     addViewToWindow(container) {
         const oldCanvases = container.current.getElementsByTagName("canvas");
-        for (let i = 0; i < oldCanvases.length; i++) oldCanvases[i].parentNode.removeChild(oldCanvases[0]);
+        for (let i = 0; i < oldCanvases.length; i++) {
+            oldCanvases[i].parentNode.removeChild(oldCanvases[0]);
+        }
         container.current.appendChild(this.global.app.view);
     }
 
@@ -86,6 +91,14 @@ export default class Controller {
         };
 
         this.global.state.set("gameDimensions", this.global.gameDimensions);
+    }
+
+    // #################################################
+    //   INTERACTION
+    // #################################################
+
+    #enableInteraction() {
+        if (!("events" in this.global.app.renderer)) this.global.app.renderer.addSystem(EventSystem, "events");
     }
 
     // #################################################
