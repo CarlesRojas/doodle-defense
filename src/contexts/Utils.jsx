@@ -121,9 +121,9 @@ const UtilsProvider = (props) => {
         const six_power = Math.pow(10, 6);
         const three_power = Math.pow(10, 3);
 
-        var negative = num < 0;
+        let negative = num < 0;
         num = Math.abs(num);
-        var letter = "";
+        let letter = "";
 
         if (num >= fifteen_power) {
             letter = "Q";
@@ -142,7 +142,7 @@ const UtilsProvider = (props) => {
             num = num / three_power;
         }
 
-        var num_characters = letter.length ? 3 : 4;
+        let num_characters = letter.length ? 3 : 4;
 
         // Limit to one decimal and at most 4 characters
         if (num >= 100) num = num.toFixed(Math.min(1, Math.max(0, num_characters - 3)));
@@ -157,10 +157,10 @@ const UtilsProvider = (props) => {
     // ###################################################
 
     const createUniqueID = (length) => {
-        var id = "";
-        var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        var charactersLength = characters.length;
-        for (var i = 0; i < length; i++) id += characters.charAt(Math.floor(Math.random() * charactersLength));
+        let id = "";
+        let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let charactersLength = characters.length;
+        for (let i = 0; i < length; i++) id += characters.charAt(Math.floor(Math.random() * charactersLength));
 
         return /*new Date().toISOString() + "_" +*/ id;
     };

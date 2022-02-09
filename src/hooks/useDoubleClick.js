@@ -4,7 +4,7 @@ export default function useDoubleClick({ ref, delay = 300, onSingleClick = () =>
     useEffect(() => {
         const clickRef = ref.current;
         let clickCount = 0;
-        var timeout = null;
+        let timeout = null;
 
         const handleClick = (e) => {
             clearTimeout(timeout);

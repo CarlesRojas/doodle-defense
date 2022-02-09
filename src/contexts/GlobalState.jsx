@@ -18,7 +18,7 @@ const GlobalStateProvider = (props) => {
 
     const unsub = (stateName, func) => {
         if (state.current[stateName])
-            for (var i = 0; i < state.current[stateName].subbedFunctions.length; i++)
+            for (let i = 0; i < state.current[stateName].subbedFunctions.length; i++)
                 if (state.current[stateName].subbedFunctions[i] === func) {
                     state.current[stateName].subbedFunctions.splice(i, 1);
                     break;

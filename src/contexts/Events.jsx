@@ -11,7 +11,7 @@ const EventsProvider = (props) => {
 
     const unsub = (eventName, func) => {
         if (events.current[eventName])
-            for (var i = 0; i < events.current[eventName].length; i++)
+            for (let i = 0; i < events.current[eventName].length; i++)
                 if (events.current[eventName][i] === func) {
                     events.current[eventName].splice(i, 1);
                     break;

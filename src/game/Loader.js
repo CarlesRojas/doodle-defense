@@ -91,6 +91,8 @@ export default class Loader {
         this.global.app.loader.load();
     }
 
+    destructor() {}
+
     // #################################################
     //   PROGRESS
     // #################################################
@@ -114,7 +116,7 @@ export default class Loader {
     // #################################################
 
     async #loadFonts() {
-        var handFont = new FontFaceObserver("Hand");
+        let handFont = new FontFaceObserver("Hand");
         await handFont.load();
 
         this.#handleLoadFontsComplete();

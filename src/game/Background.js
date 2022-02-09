@@ -14,6 +14,8 @@ export default class Background {
         this.handleResize();
     }
 
+    destructor() {}
+
     // #################################################
     //   RESIZE
     // #################################################

@@ -1,26 +1,23 @@
 import * as PIXI from "pixi.js";
 import MultiStyleText from "pixi-multistyle-text";
-import constants from "../constants";
 import CARDS from "./lists/cards";
 import { capitalizeFirstLetter } from "./Utils";
 
-const cardWidthInCellSizeUnits = 2.5;
+const CARD_WIDTH = 2.5; // CARD_WIDTH * cellsize = card width px
+const ENTERING_SPEED = 40; // 1 cellsizes per second
+const SPEED = 10; // 1 cellsizes per second
 
 export default class Card {
     constructor(global, handContainer, id, level, handPosition, totalCardsInHand) {
+        // PARENT ARGUMENTS
         this.global = global;
         this.handContainer = handContainer;
-
         this.cardInfo = CARDS[id];
         this.handPosition = handPosition;
         this.totalCardsInHand = totalCardsInHand;
         this.level = level;
 
-        this.initialWidth = {
-            art: 0,
-            card: 0,
-        };
-
+        // CARD ELEMENTS
         this.elements = {
             art: null,
             artBorder: null,
@@ -30,20 +27,29 @@ export default class Card {
             type: null,
             description: null,
         };
+        this.initialWidth = { art: 0, card: 0 };
 
+        // ANIMATION
+        this.animating = false;
+        this.targetPosition = { x: 0, y: this.global.app.screen.height };
+        this.targetRotation = 0;
+        this.targetScale = 0;
+        this.drawingCard = true;
+        this.discardingCard = false;
+
+        // CONTAINER
         this.container = new PIXI.Container();
+        this.container.angle = this.targetRotation;
+        this.container.position.set(this.targetPosition.x, this.targetPosition.y);
+        this.container.scale.set(this.targetScale);
+        this.container.zIndex = handPosition;
         this.handContainer.addChild(this.container);
 
-        this.targetRotation = 0;
-        this.container.angle = this.targetRotation;
-
-        this.targetPosition = { x: 0, y: this.global.app.screen.height };
-        this.container.position.set(this.targetPosition.x, this.targetPosition.y);
-
-        this.container.zIndex = handPosition;
-
+        // CREATE CARD
         this.#instantiateCard();
     }
+
+    destructor() {}
 
     #instantiateCard() {
         const { type, name, artID, mana, text } = this.cardInfo;
@@ -146,13 +152,13 @@ export default class Card {
         const { cellSize } = this.global.gameDimensions;
 
         // Card
-        const cardScaleFactor = (cellSize * cardWidthInCellSizeUnits) / this.initialWidth.card;
+        const cardScaleFactor = (cellSize * CARD_WIDTH) / this.initialWidth.card;
         this.elements.card.scale.set(cardScaleFactor);
         this.elements.card.x = -cardScaleFactor * 1;
         this.elements.card.y = cardScaleFactor * 14;
 
         // Art
-        const artScaleFactor = (cellSize * (cardWidthInCellSizeUnits / 2)) / this.initialWidth.art;
+        const artScaleFactor = (cellSize * (CARD_WIDTH / 2)) / this.initialWidth.art;
         this.elements.artBorder.scale.set(artScaleFactor);
         this.elements.art.scale.set(artScaleFactor);
 
@@ -214,6 +220,12 @@ export default class Card {
         this.#updateTargetPosition();
     }
 
+    discard() {
+        this.discardingCard = true;
+        this.targetPosition = { ...this.targetPosition, x: this.global.app.screen.width };
+        this.targetScale = 0;
+    }
+
     #updateTargetPosition() {
         const { cellSize } = this.global.gameDimensions;
 
@@ -227,8 +239,8 @@ export default class Card {
         this.targetPosition = {
             x:
                 this.global.app.screen.width / 2 +
-                currentCardDisp * cellSize * cardWidthInCellSizeUnits * (1 - overlap) +
-                (evenCards ? (cellSize * cardWidthInCellSizeUnits * (1 - overlap)) / 2 : 0),
+                currentCardDisp * cellSize * CARD_WIDTH * (1 - overlap) +
+                (evenCards ? (cellSize * CARD_WIDTH * (1 - overlap)) / 2 : 0),
             y:
                 this.global.app.screen.height -
                 cellSize * 0.5 +
@@ -237,13 +249,89 @@ export default class Card {
 
         this.targetRotation = (10 / middleCard) * (currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0));
 
-        this.container.position.set(this.targetPosition.x, this.targetPosition.y);
-        this.container.angle = this.targetRotation;
+        this.targetScale = 1;
+    }
+
+    #animateCard(deltaTime) {
+        const { cellSize } = this.global.gameDimensions;
+        let animating = false;
+        const speed = this.drawingCard || this.discardingCard ? ENTERING_SPEED : SPEED;
+
+        // ANIMATE POSITION
+        const step = cellSize * speed * deltaTime;
+
+        if (this.container.x > this.targetPosition.x)
+            this.container.x = Math.max(this.targetPosition.x, this.container.x - step);
+        else if (this.container.x < this.targetPosition.x)
+            this.container.x = Math.min(this.targetPosition.x, this.container.x + step);
+
+        if (this.container.y > this.targetPosition.y)
+            this.container.y = Math.max(this.targetPosition.y, this.container.y - step);
+        else if (this.container.y < this.targetPosition.y)
+            this.container.y = Math.min(this.targetPosition.y, this.container.y + step);
+
+        // ANIMATE ROTATION
+        const rotationStep = speed * 5 * deltaTime;
+
+        if (this.container.angle > this.targetRotation)
+            this.container.angle = Math.max(this.targetRotation, this.container.angle - rotationStep);
+        else if (this.container.angle < this.targetRotation)
+            this.container.angle = Math.min(this.targetRotation, this.container.angle + rotationStep);
+
+        // ANIMATE SCALE
+        const scaleStep = speed * 0.0875 * deltaTime;
+
+        if (this.container.scale.x > this.targetScale)
+            this.container.scale.x = Math.max(this.targetScale, this.container.scale.x - scaleStep);
+        else if (this.container.scale.x < this.targetScale)
+            this.container.scale.x = Math.min(this.targetScale, this.container.scale.x + scaleStep);
+
+        if (this.container.scale.y > this.targetScale)
+            this.container.scale.y = Math.max(this.targetScale, this.container.scale.y - scaleStep);
+        else if (this.container.scale.y < this.targetScale)
+            this.container.scale.y = Math.min(this.targetScale, this.container.scale.y + scaleStep);
+
+        // CHECK IF WE ARE ANIMATING
+        if (
+            this.container.x > this.targetPosition.x ||
+            this.container.x < this.targetPosition.x ||
+            this.container.y > this.targetPosition.y ||
+            this.container.y < this.targetPosition.y ||
+            this.container.angle > this.targetRotation ||
+            this.container.angle < this.targetRotation ||
+            this.container.scale.x > this.targetScale ||
+            this.container.scale.x < this.targetScale ||
+            this.container.scale.y > this.targetScale ||
+            this.container.scale.y < this.targetScale
+        )
+            animating = true;
+
+        // ANIMATION CHANGE STATE
+        if (this.animating !== animating) {
+            this.animating = animating;
+            this.#animationChangeState();
+        }
+    }
+
+    #animationChangeState() {
+        // When the card finishes the draw animation
+        if (!this.animating && this.drawingCard) {
+            this.drawingCard = false;
+            this.global.events.emit("cardDrawn");
+        }
+
+        if (!this.animating && this.discardingCard) {
+            this.discardingCard = false;
+            this.handContainer.removeChild(this.container);
+            this.global.events.emit("cardDiscarded");
+        }
     }
 
     // #################################################
     //   GAME LOOP
     // #################################################
 
-    gameLoop(deltaTime) {}
+    gameLoop(deltaTime) {
+        this.#animateCard(deltaTime);
+    }
 }

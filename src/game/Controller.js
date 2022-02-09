@@ -6,11 +6,12 @@ import Background from "./Background";
 import Deck from "./Deck";
 
 export default class Controller {
-    constructor({ container, state, width, height }) {
+    constructor({ container, state, events, width, height }) {
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
         this.global = {
             state,
+            events,
             app: new PIXI.Application({
                 width,
                 height,
@@ -28,6 +29,11 @@ export default class Controller {
         this.addViewToWindow(container);
 
         this.global.loader = new Loader(this.global, this.#handleLoadingComplete.bind(this));
+    }
+
+    destructor() {
+        for (const value of Object.values(this.global.containers)) value.destructor();
+        this.global.loader.destructor();
     }
 
     #handleLoadingComplete() {
@@ -61,8 +67,8 @@ export default class Controller {
     #getGameDimensions({ width, height }) {
         const { aspectRatioWidth, aspectRatioHeight, gridX } = constants;
 
-        var gameWidth = width;
-        var gameHeight = (width / aspectRatioWidth) * aspectRatioHeight;
+        let gameWidth = width;
+        let gameHeight = (width / aspectRatioWidth) * aspectRatioHeight;
 
         if (gameHeight > height) {
             gameHeight = height;
@@ -89,6 +95,7 @@ export default class Controller {
     #gameLoop() {
         if (!this.global) return;
 
-        for (const value of Object.values(this.global.containers)) value.gameLoop(this.global.app.ticker.deltaMS);
+        for (const value of Object.values(this.global.containers))
+            value.gameLoop(this.global.app.ticker.deltaMS / 1000);
     }
 }

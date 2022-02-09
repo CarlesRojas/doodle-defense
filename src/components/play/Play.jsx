@@ -6,9 +6,11 @@ import Controller from "../../game/Controller";
 import useResize from "../../hooks/useResize";
 
 import { GlobalState } from "../../contexts/GlobalState";
+import { Events } from "../../contexts/Events";
 
 export default function Play() {
     const globalState = useContext(GlobalState);
+    const events = useContext(Events);
 
     const container = useRef();
     const controller = useRef();
@@ -34,8 +36,8 @@ export default function Play() {
         const width = container.current.clientWidth;
         const height = container.current.clientHeight;
 
-        controller.current = new Controller({ container, state: globalState, width, height });
-    }, [globalState]);
+        controller.current = new Controller({ container, state: globalState, events, width, height });
+    }, [globalState, events]);
 
     useEffect(() => {
         init();
