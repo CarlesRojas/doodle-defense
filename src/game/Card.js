@@ -375,7 +375,7 @@ export default class Card {
                 currentCardDisp * cellSize * CARD_WIDTH * (1 - overlap) + // Displace left or right to spread the cards
                 (evenCards ? (cellSize * CARD_WIDTH * (1 - overlap)) / 2 : 0) + // If the cards are even, no card in the middle
                 (this.highlightedCard >= 0 && this.handPosition !== this.highlightedCard
-                    ? cellSize * CARD_WIDTH * (overlap + 0.15) * (this.handPosition < this.highlightedCard ? -1 : 1)
+                    ? cellSize * CARD_WIDTH * (overlap + 0.1) * (this.handPosition < this.highlightedCard ? -1 : 1)
                     : 0), // displace if there is a card selected to give it space
             y:
                 this.global.app.screen.height + // Bottom of the screen
