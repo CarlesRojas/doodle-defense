@@ -1,10 +1,9 @@
 import * as PIXI from "pixi.js";
 import { EventSystem } from "@pixi/events";
-import GameContainer from "./GameContainer";
+import Combat from "./Combat";
 import Loader from "./Loader";
 import constants from "../constants";
 import Background from "./Background";
-import Deck from "./Deck";
 
 export default class Controller {
     constructor({ container, state, events, width, height }) {
@@ -41,8 +40,7 @@ export default class Controller {
 
     #handleLoadingComplete() {
         this.global.containers.background = new Background(this.global);
-        this.global.containers.game = new GameContainer(this.global);
-        this.global.containers.deck = new Deck(this.global);
+        this.global.containers.combat = new Combat(this.global);
         this.global.app.ticker.add(this.#gameLoop.bind(this));
     }
 

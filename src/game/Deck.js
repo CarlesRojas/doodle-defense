@@ -60,7 +60,8 @@ export default class Deck {
 
         // SUB TO EVENTS
         this.global.events.sub("cardDrawn", this.#drawNextCard.bind(this));
-        this.global.events.sub("cardDiscarded", this.#discardNextCard.bind(this));
+        this.global.events.sub("cardDiscarded", this.#cleanupAfterACardIsDiscarded.bind(this));
+        this.global.events.sub("discardCardAtIndex", this.#discardCardAtIndex.bind(this));
 
         // START COMBAT
         this.#startCombat();
@@ -71,7 +72,8 @@ export default class Deck {
 
         // UNSUB FROM EVENTS
         this.global.events.unsub("cardDrawn", this.#drawNextCard.bind(this));
-        this.global.events.unsub("cardDiscarded", this.#discardNextCard.bind(this));
+        this.global.events.unsub("cardDiscarded", this.#cleanupAfterACardIsDiscarded.bind(this));
+        this.global.events.unsub("discardCardAtIndex", this.#discardCardAtIndex.bind(this));
     }
 
     // #################################################
@@ -98,10 +100,10 @@ export default class Deck {
 
     #startCombat() {
         this.drawPile = [...this.deck];
-        this.#drawCards(5);
+        this.#drawCards(7);
 
         // setTimeout(() => {
-        //     this.#discardCards(2);
+        //     this.#discardCards(4);
         // }, 4000);
     }
 
@@ -142,17 +144,27 @@ export default class Deck {
         this.#discardNextCard();
     }
 
+    #discardCardAtIndex(index) {
+        if (index < 0 || index >= this.hand.length) return;
+
+        const card = this.hand.splice(index, 1)[0];
+        card.object.discard();
+        this.discardPile.push(card);
+    }
+
     #discardNextCard() {
-        for (let i = 0; i < this.discardPile.length; i++) this.discardPile[i].object = null;
-        if (this.cardsLeftToDiscard <= 0) {
-            this.#updateCardsHandPositions();
-            return;
-        }
         --this.cardsLeftToDiscard;
 
         const card = this.hand.pop();
         card.object.discard();
         this.discardPile.push(card);
+    }
+
+    #cleanupAfterACardIsDiscarded() {
+        for (let i = 0; i < this.discardPile.length; i++) this.discardPile[i].object = null;
+
+        if (this.cardsLeftToDiscard <= 0) this.#updateCardsHandPositions();
+        else this.#discardNextCard();
     }
 
     // #################################################

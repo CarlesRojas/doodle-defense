@@ -54,13 +54,20 @@ export default class Card {
         this.isHighlighted = false;
         this.highlightedCard = -1;
 
+        // DRAG
+        this.isReturningToHand = false;
+        this.isMoving = false;
+
         // CREATE CARD
         this.#instantiateCard();
 
         // SUB TO EVENTS
         this.container.addEventListener("pointerenter", this.#handlePointerEnter.bind(this));
         this.container.addEventListener("pointerleave", this.#handlePointerLeave.bind(this));
+        this.container.addEventListener("pointerdown", this.#handlePointerDown.bind(this));
         this.container.addEventListener("pointerup", this.#handlePointerUp.bind(this));
+        this.container.addEventListener("pointerupoutside", this.#handlePointerUp.bind(this));
+
         this.global.events.sub("highlightCard", this.#highlightCard.bind(this));
     }
 
@@ -68,7 +75,10 @@ export default class Card {
         // UNSUB TFROM EVENTS
         this.container.removeEventListener("pointerenter", this.#handlePointerEnter.bind(this));
         this.container.removeEventListener("pointerleave", this.#handlePointerLeave.bind(this));
+        this.container.removeEventListener("pointerdown", this.#handlePointerDown.bind(this));
         this.container.removeEventListener("pointerup", this.#handlePointerUp.bind(this));
+        this.container.removeEventListener("pointerupoutside", this.#handlePointerUp.bind(this));
+        this.container.removeEventListener("pointermove", this.#handlePointerMove.bind(this));
         this.global.events.unsub("highlightCard", this.#highlightCard.bind(this));
     }
 
@@ -186,13 +196,36 @@ export default class Card {
         // console.log(`leave card: ${this.handPosition}`);
     }
 
-    #handlePointerUp() {
+    #handlePointerDown() {
         if (this.isHighlighted) this.global.events.emit("highlightCard", -1);
         else this.global.events.emit("highlightCard", this.handPosition);
+
+        this.isMoving = true;
+        this.container.addEventListener("pointermove", this.#handlePointerMove.bind(this));
+
         // console.log(`click card: ${this.handPosition}`);
     }
 
+    #handlePointerUp(event) {
+        const { cellSize } = this.global.gameDimensions;
+
+        // Stop moving
+        this.isMoving = false;
+        this.container.removeEventListener("pointermove", this.#handlePointerMove.bind(this));
+
+        // Check if action is made or canceled
+        if (event.global.y < this.global.app.screen.height - cellSize * 3) this.#discardThis();
+        else this.isReturningToHand = true;
+    }
+
+    #handlePointerMove(event) {
+        if (!this.isMoving) return;
+        this.container.parent.toLocal(event.global, null, this.container.position);
+    }
+
     #highlightCard(index) {
+        if (this.drawingCard || this.discardingCard || this.isReturningToHand) return;
+
         this.isHighlighted = index === this.handPosition;
         this.highlightedCard = index;
 
@@ -284,9 +317,28 @@ export default class Card {
     }
 
     discard() {
+        const { cellSize } = this.global.gameDimensions;
+        const middleCard = Math.floor(this.totalCardsInHand / 2);
+        const evenCards = this.totalCardsInHand % 2 === 0;
+        const currentCardDisp = this.handPosition - middleCard;
+        const heightDisp = middleCard > 0 ? 0.5 / middleCard : 0.5;
+
         this.discardingCard = true;
-        this.targetPosition = { ...this.targetPosition, x: this.global.app.screen.width };
+        this.isHighlighted = false;
+        this.targetPosition = {
+            x: this.global.app.screen.width,
+            y:
+                this.global.app.screen.height -
+                cellSize * 0.5 +
+                Math.abs(currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0)) * cellSize * heightDisp,
+        };
         this.targetScale = 0;
+        this.highlightedCard = -1;
+        this.global.events.emit("highlightCard", -1);
+    }
+
+    #discardThis() {
+        this.global.events.emit("discardCardAtIndex", this.handPosition);
     }
 
     #updateTargetPosition() {
@@ -297,7 +349,7 @@ export default class Card {
         const currentCardDisp = this.handPosition - middleCard;
 
         const overlap = Math.min(0.75, Math.max(0.25, 0.05 * this.totalCardsInHand));
-        const heightDisp = 0.5 / middleCard;
+        const heightDisp = middleCard > 0 ? 0.5 / middleCard : 0.5;
 
         const cardRatio = this.initialHeight.card / this.initialWidth.card;
 
@@ -325,9 +377,11 @@ export default class Card {
     }
 
     #animateCard(deltaTime) {
+        if (this.isMoving) return;
+
         const { cellSize } = this.global.gameDimensions;
         let animating = false;
-        const speed = this.drawingCard || this.discardingCard ? ENTERING_SPEED : SPEED;
+        const speed = this.drawingCard || this.discardingCard || this.isReturningToHand ? ENTERING_SPEED : SPEED;
 
         // ANIMATE POSITION
         const step = cellSize * speed * deltaTime;
@@ -394,10 +448,16 @@ export default class Card {
             this.global.events.emit("cardDrawn");
         }
 
+        // When the card finishes the discard animation
         if (!this.animating && this.discardingCard) {
             this.discardingCard = false;
             this.handContainer.removeChild(this.container);
             this.global.events.emit("cardDiscarded");
+        }
+
+        // When the card finishes returning to hand
+        if (!this.animating && this.isReturningToHand) {
+            this.isReturningToHand = false;
         }
     }
 
