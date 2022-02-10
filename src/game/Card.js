@@ -238,7 +238,7 @@ export default class Card {
         const yDisplacement = this.initialY - event.global.y;
 
         // Check if action is made or canceled
-        if (Math.abs(yDisplacement) > 2 && event.global.y < this.global.app.screen.height - cellSize * 3)
+        if (Math.abs(yDisplacement) > 2 && event.global.y < this.global.app.screen.height - cellSize * 2)
             this.#discardThis();
         else this.isReturningToHand = true;
     }
