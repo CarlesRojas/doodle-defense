@@ -1,6 +1,5 @@
 import * as PIXI from "pixi.js";
 import MultiStyleText from "pixi-multistyle-text";
-import { DropShadowFilter } from "@pixi/filter-drop-shadow";
 import CARDS from "./lists/cards";
 import { capitalizeFirstLetter, degToRad } from "./Utils";
 
@@ -28,10 +27,11 @@ export default class Card {
             name: null,
             type: null,
             description: null,
+            shadow: null,
         };
 
         // INITIAL VALUES
-        this.initialWidth = { art: 0, card: 0, mana: 0 };
+        this.initialWidth = { art: 0, card: 0, mana: 0, shadow: 0 };
         this.initialHeight = { card: 0 };
 
         // ANIMATION
@@ -49,12 +49,6 @@ export default class Card {
         this.container.scale.set(this.targetScale);
         this.container.zIndex = handPosition;
         this.container.interactive = false;
-
-        // Drop Shadow
-        this.shadow = new DropShadowFilter();
-        this.shadow.alpha = 0.2;
-        this.shadow.rotation = 120;
-        this.container.filters = [this.shadow];
         this.handContainer.addChild(this.container);
 
         // HIGHLIGHT
@@ -113,6 +107,12 @@ export default class Card {
             align: "center",
         };
 
+        // SHADOW
+        this.elements.shadow = PIXI.Sprite.from(this.global.app.loader.resources.card_shadow.texture);
+        this.elements.shadow.anchor.set(0.5);
+        this.elements.shadow.alpha = 0.5;
+        this.initialWidth.shadow = this.elements.shadow.width;
+
         // CARD
         this.elements.card = PIXI.Sprite.from(this.global.app.loader.resources[this.#getCardID()].texture);
         this.elements.card.anchor.set(0.5);
@@ -151,6 +151,7 @@ export default class Card {
         });
         this.elements.description.anchor.set(0.5);
 
+        this.container.addChild(this.elements.shadow);
         this.container.addChild(this.elements.card);
         this.container.addChild(this.elements.art);
         // this.container.addChild(this.elements.artBorder);
@@ -247,6 +248,12 @@ export default class Card {
     handleResize() {
         const { cellSize } = this.global.gameDimensions;
 
+        // Shadow
+        const shadowScaleFactor = (cellSize * CARD_WIDTH * 1.1) / this.initialWidth.shadow;
+        this.elements.shadow.scale.set(shadowScaleFactor);
+        this.elements.shadow.y = shadowScaleFactor * (25 + 12);
+        this.elements.shadow.x = -shadowScaleFactor * 10;
+
         // Card
         const cardScaleFactor = (cellSize * CARD_WIDTH) / this.initialWidth.card;
         this.elements.card.scale.set(cardScaleFactor);
@@ -309,8 +316,6 @@ export default class Card {
         this.elements.description.y = cardScaleFactor * 54.5;
 
         // Shadow
-        this.shadow.distance = cellSize * 0.3;
-        this.shadow.blur = cellSize * 0.03;
 
         this.#updateTargetPosition();
     }
@@ -385,6 +390,10 @@ export default class Card {
             : (10 / middleCard) * (currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0));
 
         this.targetScale = this.isHighlighted ? 1.2 : 1;
+
+        // this.targetPosition = { x: this.global.app.screen.width / 2, y: this.global.app.screen.height / 2 };
+        // this.targetAngleInDeg = 0;
+        // this.targetScale = 1;
     }
 
     #animateCard(deltaTime) {
@@ -473,7 +482,7 @@ export default class Card {
     }
 
     #updateZIndex() {
-        // this.container.zIndex = this.isHighlighted || this.isMoving ? 100 : this.handPosition;
+        this.container.zIndex = this.isHighlighted || this.isMoving ? 100 : this.handPosition;
     }
 
     // #################################################
