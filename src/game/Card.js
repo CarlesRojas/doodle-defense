@@ -117,7 +117,7 @@ export default class Card {
         this.elements.shadow = PIXI.Sprite.from(this.global.app.loader.resources.card_shadow.texture);
         this.elements.shadow.resolution = 4;
         this.elements.shadow.anchor.set(0.5);
-        this.elements.shadow.alpha = 0.3;
+        this.elements.shadow.alpha = 0.2;
         this.initialWidth.shadow = this.elements.shadow.width;
 
         // CARD
