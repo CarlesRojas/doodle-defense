@@ -73,6 +73,7 @@ export default class Card {
         this.container.addEventListener("pointerupoutside", this.#handlePointerUp.bind(this));
 
         this.global.events.sub("highlightCard", this.#highlightCard.bind(this));
+        this.global.events.sub("backgroundClick", this.#handleBackgroundClick.bind(this));
     }
 
     destructor() {
@@ -83,7 +84,9 @@ export default class Card {
         this.container.removeEventListener("pointerup", this.#handlePointerUp.bind(this));
         this.container.removeEventListener("pointerupoutside", this.#handlePointerUp.bind(this));
         this.container.removeEventListener("pointermove", this.#handlePointerMove.bind(this));
+
         this.global.events.unsub("highlightCard", this.#highlightCard.bind(this));
+        this.global.events.unsub("backgroundClick", this.#handleBackgroundClick.bind(this));
     }
 
     #instantiateCard() {
@@ -206,7 +209,7 @@ export default class Card {
     }
 
     // #################################################
-    //   HOVER A CARD
+    //   HANDLERS
     // #################################################
 
     #handlePointerEnter() {
@@ -244,6 +247,14 @@ export default class Card {
         if (!this.isMoving) return;
         this.container.parent.toLocal(event.global, null, this.container.position);
     }
+
+    #handleBackgroundClick() {
+        this.global.events.emit("highlightCard", -1);
+    }
+
+    // #################################################
+    //   HIGHLIGHT
+    // #################################################
 
     #highlightCard(index) {
         if (this.drawingCard || this.discardingCard || this.isReturningToHand) return;

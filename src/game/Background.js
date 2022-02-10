@@ -6,15 +6,31 @@ const TILES_IN_SPRITE = 10;
 export default class Background {
     constructor(global) {
         this.global = global;
+
         this.container = new PIXI.Container();
+        this.container.interactive = true;
         this.global.app.stage.addChild(this.container);
 
         this.tiles = [[]];
 
         this.handleResize();
+
+        // SUB TO EVENTS
+        this.container.addEventListener("pointerdown", this.#handlePointerDown.bind(this));
     }
 
-    destructor() {}
+    destructor() {
+        // UNSUB FROM EVENTS
+        this.container.removeEventListener("pointerdown", this.#handlePointerDown.bind(this));
+    }
+
+    // #################################################
+    //   HANDLERS
+    // #################################################
+
+    #handlePointerDown() {
+        this.global.events.emit("backgroundClick");
+    }
 
     // #################################################
     //   RESIZE
