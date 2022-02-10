@@ -35,12 +35,14 @@ export default class Card {
         this.initialHeight = { card: 0 };
 
         // ANIMATION
+        const { cellSize } = this.global.gameDimensions;
         this.animating = false;
-        this.targetPosition = { x: 0, y: this.global.app.screen.height };
+        this.targetPosition = { x: cellSize, y: this.global.app.screen.height - cellSize };
         this.targetAngleInDeg = 0;
         this.targetScale = 0.2;
         this.drawingCard = true;
         this.discardingCard = false;
+        this.discarded = false;
 
         // CONTAINER
         this.container = new PIXI.Container();
@@ -333,20 +335,13 @@ export default class Card {
 
     discard() {
         const { cellSize } = this.global.gameDimensions;
-        const middleCard = Math.floor(this.totalCardsInHand / 2);
-        const evenCards = this.totalCardsInHand % 2 === 0;
-        const currentCardDisp = this.handPosition - middleCard;
-        const heightDisp = middleCard > 0 ? 0.5 / middleCard : 0.5;
 
         this.discardingCard = true;
         this.isHighlighted = false;
 
         this.targetPosition = {
-            x: this.global.app.screen.width,
-            y:
-                this.global.app.screen.height -
-                cellSize * 0.5 +
-                Math.abs(currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0)) * cellSize * heightDisp,
+            x: this.global.app.screen.width - cellSize,
+            y: this.global.app.screen.height - cellSize,
         };
         this.targetScale = 0.2;
         this.highlightedCard = -1;
@@ -432,7 +427,7 @@ export default class Card {
             this.container.rotation = Math.min(angleInRad, this.container.rotation + rotationStep);
 
         // ANIMATE SCALE
-        const scaleStep = speed * 0.0875 * deltaTime;
+        const scaleStep = speed * 0.1 * deltaTime;
 
         if (this.container.scale.x > this.targetScale)
             this.container.scale.x = Math.max(this.targetScale, this.container.scale.x - scaleStep);
@@ -475,6 +470,7 @@ export default class Card {
         // When the card finishes the discard animation
         if (!this.animating && this.discardingCard) {
             this.discardingCard = false;
+            this.discarded = true;
             this.handContainer.removeChild(this.container);
             this.global.events.emit("cardDiscarded");
         }

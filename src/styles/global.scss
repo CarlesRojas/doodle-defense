@@ -3,14 +3,14 @@
 @font-face {
     font-family: "Hand";
     font-weight: normal;
-    src: local("IsaacGame"), url("../resources/fonts/Hand.ttf") format("truetype");
+    src: local("Hand"), url("../resources/fonts/Hand.ttf") format("truetype");
 }
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: "Montserrat", sans-serif;
+    font-family: "Hand", "Montserrat", sans-serif;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     overscroll-behavior: touch;
 }
@@ -29,12 +29,12 @@ body {
     height: 100%;
     width: 100%;
     color: $text;
-    font-family: "Montserrat", sans-serif;
+    font-family: "Hand", "Montserrat", sans-serif;
     touch-action: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior-y: contain;
-    background: $background;
+    background: $paper;
 }
 
 #root {

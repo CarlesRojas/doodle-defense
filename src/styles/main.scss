@@ -71,7 +71,46 @@
 
     .gameContainer {
         position: absolute;
-        // background-color: rgba(255, 241, 210, 0.185);
+        // background-color: rgba(255, 191, 117, 0.185);
+    }
+
+    .cardPiles {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        .pile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            .icon {
+                pointer-events: all;
+                transition: opacity 0.2s ease-in-out;
+                height: 100%;
+                max-height: 100%;
+                min-height: 100%;
+            }
+
+            .numOfCards {
+                position: absolute;
+                width: 100%;
+                font-size: 1.7rem;
+                font-weight: 600;
+                text-align: center;
+
+                &.discard {
+                    font-weight: unset;
+                    color: $paper;
+                    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+                }
+            }
+        }
     }
 }
 
