@@ -404,17 +404,22 @@ export default class Card {
         const speed = this.drawingCard || this.discardingCard || this.isReturningToHand ? ENTERING_SPEED : SPEED;
 
         // ANIMATE POSITION
-        const step = cellSize * speed * deltaTime;
+        const direction = { x: this.targetPosition.x - this.container.x, y: this.targetPosition.y - this.container.y };
+        const magnitude = Math.sqrt(direction.x * direction.x + direction.y * direction.y);
 
-        if (this.container.x > this.targetPosition.x)
-            this.container.x = Math.max(this.targetPosition.x, this.container.x - step);
-        else if (this.container.x < this.targetPosition.x)
-            this.container.x = Math.min(this.targetPosition.x, this.container.x + step);
+        if (magnitude !== 0) {
+            direction.x /= magnitude;
+            direction.y /= magnitude;
 
-        if (this.container.y > this.targetPosition.y)
-            this.container.y = Math.max(this.targetPosition.y, this.container.y - step);
-        else if (this.container.y < this.targetPosition.y)
-            this.container.y = Math.min(this.targetPosition.y, this.container.y + step);
+            const stepX = cellSize * speed * direction.x * deltaTime;
+            const stepY = cellSize * speed * direction.y * deltaTime;
+
+            if (stepX < 0) this.container.x = Math.max(this.targetPosition.x, this.container.x + stepX);
+            else this.container.x = Math.min(this.targetPosition.x, this.container.x + stepX);
+
+            if (stepY < 0) this.container.y = Math.max(this.targetPosition.y, this.container.y + stepY);
+            else this.container.y = Math.min(this.targetPosition.y, this.container.y + stepY);
+        }
 
         // ANIMATE ROTATION
         const rotationStep = speed * 0.1 * deltaTime;
@@ -440,10 +445,7 @@ export default class Card {
 
         // CHECK IF WE ARE ANIMATING
         if (
-            this.container.x > this.targetPosition.x ||
-            this.container.x < this.targetPosition.x ||
-            this.container.y > this.targetPosition.y ||
-            this.container.y < this.targetPosition.y ||
+            magnitude !== 0 ||
             this.container.rotation > angleInRad ||
             this.container.rotation < angleInRad ||
             this.container.scale.x > this.targetScale ||
