@@ -112,18 +112,21 @@ export default class Card {
 
         // SHADOW
         this.elements.shadow = PIXI.Sprite.from(this.global.app.loader.resources.card_shadow.texture);
+        this.elements.shadow.resolution = 4;
         this.elements.shadow.anchor.set(0.5);
         this.elements.shadow.alpha = 0.3;
         this.initialWidth.shadow = this.elements.shadow.width;
 
         // CARD
         this.elements.card = PIXI.Sprite.from(this.global.app.loader.resources[this.#getCardID()].texture);
+        this.elements.card.resolution = 4;
         this.elements.card.anchor.set(0.5);
         this.initialWidth.card = this.elements.card.width;
         this.initialHeight.card = this.elements.card.height;
 
         // ART
         this.elements.art = PIXI.Sprite.from(this.global.app.loader.resources[artID].texture);
+        this.elements.art.resolution = 4;
         this.elements.art.anchor.set(0.5);
         this.initialWidth.art = this.elements.art.width;
 
@@ -132,19 +135,26 @@ export default class Card {
 
         // NAME
         this.elements.name = new PIXI.Text(name[this.level], whiteTextStyle);
+        this.elements.name.resolution = 4;
+        this.elements.name.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
         this.elements.name.anchor.set(0.5);
 
         // MANA
         this.elements.mana = PIXI.Sprite.from(this.global.app.loader.resources.card_mana.texture);
+        this.elements.mana.resolution = 4;
         this.elements.mana.anchor.set(0.5);
         this.initialWidth.mana = this.elements.mana.width;
 
         // MANA NUMBER
         this.elements.manaNumber = new PIXI.Text(mana[this.level], blackTextStyle);
+        this.elements.manaNumber.resolution = 4;
+        this.elements.manaNumber.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
         this.elements.manaNumber.anchor.set(0.5);
 
         // TYPE
         this.elements.type = new PIXI.Text(capitalizeFirstLetter(type), blackTextStyle);
+        this.elements.type.resolution = 4;
+        this.elements.type.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
         this.elements.type.anchor.set(0.5);
 
         // Description
@@ -152,6 +162,8 @@ export default class Card {
             default: blackTextStyle,
             highlight: highlightTextStyle,
         });
+        this.elements.description.resolution = 4;
+        this.elements.description.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
         this.elements.description.anchor.set(0.5);
 
         this.container.addChild(this.elements.shadow);

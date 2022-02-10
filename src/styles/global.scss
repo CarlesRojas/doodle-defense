@@ -46,6 +46,7 @@ body {
 img,
 video {
     display: block;
+    image-rendering: pixelated;
 }
 
 // Autofill color

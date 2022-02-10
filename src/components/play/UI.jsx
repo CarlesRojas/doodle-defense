@@ -72,7 +72,9 @@ export default function UI() {
                     style={{ height: `${cellSize * 2}px`, width: `${cellSize * 2}px`, padding: `${cellSize * 0.4}px` }}
                 >
                     <img src={DrawPile} alt="" className="icon" onClick={handleDrawPileClick} />
-                    <p className="numOfCards">{drawPile}</p>
+                    <p className="numOfCards" style={{ fontSize: `${cellSize * 0.43}px` }}>
+                        {drawPile}
+                    </p>
                 </div>
 
                 <div
@@ -80,7 +82,9 @@ export default function UI() {
                     style={{ height: `${cellSize * 2}px`, width: `${cellSize * 2}px`, padding: `${cellSize * 0.4}px` }}
                 >
                     <img src={DiscardPile} alt="" className="icon" onClick={handleDiscardPileClick} />
-                    <p className="numOfCards discard">{discardPile}</p>
+                    <p className="numOfCards discard" style={{ fontSize: `${cellSize * 0.43}px` }}>
+                        {discardPile}
+                    </p>
                 </div>
             </div>
         </div>
