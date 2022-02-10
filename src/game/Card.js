@@ -58,6 +58,7 @@ export default class Card {
         // DRAG
         this.isReturningToHand = false;
         this.isMoving = false;
+        this.initialY = 0;
 
         // CREATE CARD
         this.#instantiateCard();
@@ -110,7 +111,7 @@ export default class Card {
         // SHADOW
         this.elements.shadow = PIXI.Sprite.from(this.global.app.loader.resources.card_shadow.texture);
         this.elements.shadow.anchor.set(0.5);
-        this.elements.shadow.alpha = 0.5;
+        this.elements.shadow.alpha = 0.3;
         this.initialWidth.shadow = this.elements.shadow.width;
 
         // CARD
@@ -195,23 +196,19 @@ export default class Card {
     // #################################################
 
     #handlePointerEnter() {
-        // console.log(`enter card: ${this.handPosition}`);
-
         this.global.events.emit("highlightCard", this.handPosition);
     }
 
-    #handlePointerLeave() {
-        // console.log(`leave card: ${this.handPosition}`);
-    }
+    #handlePointerLeave() {}
 
-    #handlePointerDown() {
+    #handlePointerDown(event) {
         if (this.isHighlighted) this.global.events.emit("highlightCard", -1);
         else this.global.events.emit("highlightCard", this.handPosition);
 
         this.isMoving = true;
         this.container.addEventListener("pointermove", this.#handlePointerMove.bind(this));
 
-        // console.log(`click card: ${this.handPosition}`);
+        this.initialY = event.global.y;
     }
 
     #handlePointerUp(event) {
@@ -221,8 +218,11 @@ export default class Card {
         this.isMoving = false;
         this.container.removeEventListener("pointermove", this.#handlePointerMove.bind(this));
 
+        const yDisplacement = this.initialY - event.global.y;
+
         // Check if action is made or canceled
-        if (event.global.y < this.global.app.screen.height - cellSize * 3) this.#discardThis();
+        if (Math.abs(yDisplacement) > 2 && event.global.y < this.global.app.screen.height - cellSize * 3)
+            this.#discardThis();
         else this.isReturningToHand = true;
     }
 
