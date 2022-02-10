@@ -1,6 +1,5 @@
 import { useContext, useState, useCallback, useEffect } from "react";
 import useGlobalState from "../../hooks/useGlobalState";
-import SVG from "react-inlinesvg";
 import useThrottle from "../../hooks/useThrottle";
 
 import { Events } from "../../contexts/Events";
@@ -58,7 +57,7 @@ export default function UI() {
     //   RENDER
     // #################################################
 
-    const { windowHeight, windowWidth, height, width, left, top, cellSize } = gameDimensions;
+    const { height, width, left, top, cellSize } = gameDimensions;
 
     return (
         <div className="UI">
