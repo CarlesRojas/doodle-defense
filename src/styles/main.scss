@@ -149,12 +149,10 @@
 
                 .healthValue {
                     font-weight: 600;
-                    width: unset;
                 }
 
                 .healthTotal {
                     font-weight: 600;
-                    width: unset;
                     opacity: 0.5;
                 }
             }
@@ -174,7 +172,6 @@
             }
 
             .coinNumber {
-                width: 100%;
                 font-weight: 600;
                 text-align: center;
             }
@@ -206,7 +203,6 @@
 
             .numOfCards {
                 position: absolute;
-                width: 100%;
                 font-weight: 600;
                 text-align: center;
 
@@ -221,7 +217,6 @@
 }
 
 h1 {
-    width: 100%;
     margin-bottom: 1.5rem;
     font-size: 2rem;
     font-weight: 800;
@@ -229,7 +224,6 @@ h1 {
 }
 
 p {
-    width: 100%;
     font-size: 1.2rem;
     font-weight: 600;
     text-align: center;

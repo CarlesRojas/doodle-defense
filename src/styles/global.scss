@@ -35,6 +35,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior-y: contain;
     background: $paper;
+    cursor: url("../resources/sprites/ui/CursorSmall.png"), auto;
 }
 
 #root {
