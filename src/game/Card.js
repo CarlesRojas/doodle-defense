@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import MultiStyleText from "pixi-multistyle-text";
+import { DropShadowFilter } from "@pixi/filter-drop-shadow";
 import CARDS from "./lists/cards";
 import { capitalizeFirstLetter, degToRad } from "./Utils";
 
@@ -48,6 +49,12 @@ export default class Card {
         this.container.scale.set(this.targetScale);
         this.container.zIndex = handPosition;
         this.container.interactive = false;
+
+        // Drop Shadow
+        this.shadow = new DropShadowFilter();
+        this.shadow.alpha = 0.2;
+        this.shadow.rotation = 120;
+        this.container.filters = [this.shadow];
         this.handContainer.addChild(this.container);
 
         // HIGHLIGHT
@@ -197,6 +204,7 @@ export default class Card {
     }
 
     #handlePointerDown() {
+        const { cellSize } = this.global.gameDimensions;
         if (this.isHighlighted) this.global.events.emit("highlightCard", -1);
         else this.global.events.emit("highlightCard", this.handPosition);
 
@@ -301,6 +309,10 @@ export default class Card {
         };
         this.elements.description.y = cardScaleFactor * 54.5;
 
+        // Shadow
+        this.shadow.distance = cellSize * 0.3;
+        this.shadow.blur = cellSize * 0.03;
+
         this.#updateTargetPosition();
     }
 
@@ -311,7 +323,6 @@ export default class Card {
     updateHandPosition(handPosition, totalCardsInHand) {
         this.handPosition = handPosition;
         this.totalCardsInHand = totalCardsInHand;
-        this.container.zIndex = handPosition;
 
         this.#updateTargetPosition();
     }
@@ -325,6 +336,7 @@ export default class Card {
 
         this.discardingCard = true;
         this.isHighlighted = false;
+
         this.targetPosition = {
             x: this.global.app.screen.width,
             y:
@@ -378,6 +390,8 @@ export default class Card {
 
     #animateCard(deltaTime) {
         if (this.isMoving) return;
+
+        this.container.zIndex = this.isHighlighted || this.isMoving ? 100 : this.handPosition;
 
         const { cellSize } = this.global.gameDimensions;
         let animating = false;

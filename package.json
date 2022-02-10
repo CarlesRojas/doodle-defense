@@ -4,6 +4,7 @@
     "private": true,
     "dependencies": {
         "@pixi/events": "^6.2.2",
+        "@pixi/filter-drop-shadow": "^4.1.5",
         "@use-gesture/react": "^10.2.4",
         "autoprefixer": "^10.4.2",
         "chroma-js": "^2.3.0",
