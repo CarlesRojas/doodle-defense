@@ -204,7 +204,6 @@ export default class Card {
     }
 
     #handlePointerDown() {
-        const { cellSize } = this.global.gameDimensions;
         if (this.isHighlighted) this.global.events.emit("highlightCard", -1);
         else this.global.events.emit("highlightCard", this.handPosition);
 
@@ -391,8 +390,6 @@ export default class Card {
     #animateCard(deltaTime) {
         if (this.isMoving) return;
 
-        this.container.zIndex = this.isHighlighted || this.isMoving ? 100 : this.handPosition;
-
         const { cellSize } = this.global.gameDimensions;
         let animating = false;
         const speed = this.drawingCard || this.discardingCard || this.isReturningToHand ? ENTERING_SPEED : SPEED;
@@ -475,11 +472,16 @@ export default class Card {
         }
     }
 
+    #updateZIndex() {
+        // this.container.zIndex = this.isHighlighted || this.isMoving ? 100 : this.handPosition;
+    }
+
     // #################################################
     //   GAME LOOP
     // #################################################
 
     gameLoop(deltaTime) {
         this.#animateCard(deltaTime);
+        this.#updateZIndex();
     }
 }
