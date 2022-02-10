@@ -38,7 +38,7 @@ export default class Card {
         this.animating = false;
         this.targetPosition = { x: 0, y: this.global.app.screen.height };
         this.targetAngleInDeg = 0;
-        this.targetScale = 0;
+        this.targetScale = 0.2;
         this.drawingCard = true;
         this.discardingCard = false;
 
@@ -348,7 +348,7 @@ export default class Card {
                 cellSize * 0.5 +
                 Math.abs(currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0)) * cellSize * heightDisp,
         };
-        this.targetScale = 0;
+        this.targetScale = 0.2;
         this.highlightedCard = -1;
         this.global.events.emit("highlightCard", -1);
     }
@@ -385,9 +385,10 @@ export default class Card {
                       Math.abs(currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0)) * cellSize * heightDisp), // Move down the further away
         };
 
-        this.targetAngleInDeg = this.isHighlighted
-            ? 0
-            : (10 / middleCard) * (currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0));
+        this.targetAngleInDeg =
+            this.isHighlighted || middleCard <= 0
+                ? 0
+                : (10 / middleCard) * (currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0));
 
         this.targetScale = this.isHighlighted ? 1.2 : 1;
 
@@ -458,6 +459,7 @@ export default class Card {
         // ANIMATION CHANGE STATE
         if (this.animating !== animating) {
             this.animating = animating;
+
             this.#animationChangeState();
         }
     }

@@ -102,9 +102,9 @@ export default class Deck {
         this.drawPile = [...this.deck];
         this.#drawCards(5);
 
-        // setTimeout(() => {
-        //     this.#discardCards(4);
-        // }, 4000);
+        setTimeout(() => {
+            this.#discardCards(4);
+        }, 4000);
     }
 
     // #################################################
