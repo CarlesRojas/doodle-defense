@@ -342,9 +342,9 @@ export default class Card {
         this.elements.name.style = {
             ...this.elements.name.style,
             strokeThickness: cardScaleFactor * 1.5,
-            fontSize: cardScaleFactor * 8,
+            fontSize: cardScaleFactor * 8.5,
         };
-        this.elements.name.y = -cardScaleFactor * 40;
+        this.elements.name.y = -cardScaleFactor * 39.5;
 
         // Mana
         const manaScaleFactor = (cellSize * (CARD_WIDTH * 0.22)) / this.initialWidth.mana;
