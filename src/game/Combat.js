@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js";
-import constants from "../constants";
+// import constants from "../constants";
 import Deck from "./Deck";
+import Maze from "./Maze";
 
 export default class Combat {
     constructor(global) {
@@ -8,9 +9,8 @@ export default class Combat {
         this.container = new PIXI.Container();
         this.global.app.stage.addChild(this.container);
 
-        this.wolf = PIXI.Sprite.from(this.global.app.loader.resources.enemy_wolf.texture);
-        // this.wolf.anchor.set(0.5);
-        this.container.addChild(this.wolf);
+        // Create maze
+        this.maze = new Maze(this.global);
 
         // Create deck
         this.deck = new Deck(this.global);
@@ -19,6 +19,7 @@ export default class Combat {
     }
 
     destructor() {
+        this.maze.destructor();
         this.deck.destructor();
     }
 
@@ -27,14 +28,7 @@ export default class Combat {
     // #################################################
 
     handleResize() {
-        const { left, top, cellSize } = this.global.gameDimensions;
-        const { gridX, gridY } = constants;
-
-        this.wolf.x = left + Math.floor(gridX / 2) * cellSize;
-        this.wolf.y = top + Math.floor((gridY - 2) / 2) * cellSize;
-        this.wolf.width = cellSize;
-        this.wolf.height = cellSize;
-
+        this.maze.handleResize();
         this.deck.handleResize();
     }
 
@@ -43,6 +37,7 @@ export default class Combat {
     // #################################################
 
     gameLoop(deltaTime) {
+        this.maze.gameLoop(deltaTime);
         this.deck.gameLoop(deltaTime);
     }
 }

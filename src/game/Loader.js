@@ -44,6 +44,14 @@ import Plaza_TopLeft from "../resources/sprites/plaza/Plaza_TopLeft.png";
 import Plaza_TopRight from "../resources/sprites/plaza/Plaza_TopRight.png";
 import Plaza_VerticalLeft from "../resources/sprites/plaza/Plaza_VerticalLeft.png";
 import Plaza_VerticalRight from "../resources/sprites/plaza/Plaza_VerticalRight.png";
+import Plaza_PointsRight from "../resources/sprites/plaza/Plaza_PointsRight.png";
+import Plaza_PointsLeft from "../resources/sprites/plaza/Plaza_PointsLeft.png";
+import Plaza_PointsTop from "../resources/sprites/plaza/Plaza_PointsTop.png";
+import Plaza_PointsBottom from "../resources/sprites/plaza/Plaza_PointsBottom.png";
+import Plaza_Left from "../resources/sprites/plaza/Plaza_Left.png";
+import Plaza_Right from "../resources/sprites/plaza/Plaza_Right.png";
+import Plaza_Top from "../resources/sprites/plaza/Plaza_Top.png";
+import Plaza_Bottom from "../resources/sprites/plaza/Plaza_Bottom.png";
 
 // SKILLS
 import Skill_Fortify from "../resources/sprites/skills/Skill_Fortify.png";
@@ -181,6 +189,14 @@ export default class Loader {
         this.global.app.loader.add("plaza_topRight", Plaza_TopRight);
         this.global.app.loader.add("plaza_verticalLeft", Plaza_VerticalLeft);
         this.global.app.loader.add("plaza_verticalRight", Plaza_VerticalRight);
+        this.global.app.loader.add("plaza_pointsRight", Plaza_PointsRight);
+        this.global.app.loader.add("plaza_pointsLeft", Plaza_PointsLeft);
+        this.global.app.loader.add("plaza_pointsTop", Plaza_PointsTop);
+        this.global.app.loader.add("plaza_pointsBottom", Plaza_PointsBottom);
+        this.global.app.loader.add("plaza_left", Plaza_Left);
+        this.global.app.loader.add("plaza_right", Plaza_Right);
+        this.global.app.loader.add("plaza_top", Plaza_Top);
+        this.global.app.loader.add("plaza_bottom", Plaza_Bottom);
     }
 
     #loadSkills() {
