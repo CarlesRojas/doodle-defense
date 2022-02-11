@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import MultiStyleText from "pixi-multistyle-text";
+import TaggedText from "pixi-tagged-text";
 import CARDS from "./lists/cards";
 import { capitalizeFirstLetter, degToRad } from "./Utils";
 
@@ -161,7 +161,7 @@ export default class Card {
         this.elements.type.anchor.set(0.5);
 
         // Description
-        this.elements.description = new MultiStyleText(text[this.level], {
+        this.elements.description = new TaggedText(text[this.level], {
             default: blackTextStyle,
             highlight: highlightTextStyle,
         });
@@ -323,24 +323,21 @@ export default class Card {
         this.elements.type.y = cardScaleFactor * 34.3;
 
         // Description
-        this.elements.description.textStyles.default = {
-            ...this.elements.description.textStyles.default,
-            strokeThickness: cardScaleFactor * 0.2,
-            fontSize: cardScaleFactor * 6.5,
-        };
-        this.elements.description.textStyles.highlight = {
-            ...this.elements.description.textStyles.highlight,
-            strokeThickness: cardScaleFactor * 0.2,
-            fontSize: cardScaleFactor * 6.5,
-        };
-        this.elements.description.style = {
-            ...this.elements.description.style,
+        this.elements.description.setStyleForTag("default", {
+            ...this.elements.description.tagStyles.default,
+            strokeThickness: cardScaleFactor * 0.1,
+            fontSize: cardScaleFactor * 7,
             wordWrap: true,
             wordWrapWidth: cellSize * 1.9,
-        };
-        this.elements.description.y = cardScaleFactor * 54.5;
-
-        // Shadow
+            lineSpacing: cardScaleFactor * -2,
+        });
+        this.elements.description.setStyleForTag("highlight", {
+            ...this.elements.description.tagStyles.highlight,
+            strokeThickness: cardScaleFactor * 0.1,
+            fontSize: cardScaleFactor * 7,
+        });
+        this.elements.description.x = -cellSize * 1.9 * 0.5;
+        this.elements.description.y = cardScaleFactor * 54.5 - this.elements.description.textContainer.height / 2;
 
         this.#updateTargetPosition();
     }
