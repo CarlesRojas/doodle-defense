@@ -23,7 +23,7 @@ const CARDS = {
             "Add 2 <highlight>Fortification</highlight> to your tower.",
         ],
         popups: ["Fortification", "Fortification"],
-        rarity: 0,
+        rarity: 3,
     },
 };
 

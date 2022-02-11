@@ -12,13 +12,13 @@ export default class Deck {
 
         // DECK
         this.deck = [
+            { id: "fortify", level: 1, object: null },
+            { id: "fortify", level: 1, object: null },
+            { id: "fortify", level: 1, object: null },
             { id: "fortify", level: 0, object: null },
             { id: "fortify", level: 0, object: null },
-            { id: "fortify", level: 0, object: null },
-            { id: "fortify", level: 0, object: null },
-            { id: "fortify", level: 0, object: null },
-            { id: "ballista", level: 0, object: null },
-            { id: "ballista", level: 0, object: null },
+            { id: "ballista", level: 1, object: null },
+            { id: "ballista", level: 1, object: null },
             { id: "ballista", level: 0, object: null },
             { id: "ballista", level: 0, object: null },
         ];
