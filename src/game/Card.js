@@ -115,49 +115,40 @@ export default class Card {
 
         // SHADOW
         this.elements.shadow = PIXI.Sprite.from(this.global.app.loader.resources.card_shadow.texture);
-        this.elements.shadow.resolution = 4;
         this.elements.shadow.anchor.set(0.5);
         this.elements.shadow.alpha = 0.2;
         this.initialWidth.shadow = this.elements.shadow.width;
 
         // CARD
         this.elements.card = PIXI.Sprite.from(this.global.app.loader.resources[this.#getCardID()].texture);
-        this.elements.card.resolution = 4;
         this.elements.card.anchor.set(0.5);
         this.initialWidth.card = this.elements.card.width;
         this.initialHeight.card = this.elements.card.height;
 
         // ART
         this.elements.art = PIXI.Sprite.from(this.global.app.loader.resources[artID].texture);
-        this.elements.art.resolution = 4;
         this.elements.art.anchor.set(0.5);
         this.initialWidth.art = this.elements.art.width;
 
+        // ART BORDER
         this.elements.artBorder = PIXI.Sprite.from(this.global.app.loader.resources.util_border.texture);
         this.elements.artBorder.anchor.set(0.5);
 
         // NAME
         this.elements.name = new PIXI.Text(name[this.level], whiteTextStyle);
-        this.elements.name.resolution = 4;
-        this.elements.name.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
         this.elements.name.anchor.set(0.5);
 
         // MANA
         this.elements.mana = PIXI.Sprite.from(this.global.app.loader.resources.card_mana.texture);
-        this.elements.mana.resolution = 4;
         this.elements.mana.anchor.set(0.5);
         this.initialWidth.mana = this.elements.mana.width;
 
         // MANA NUMBER
         this.elements.manaNumber = new PIXI.Text(mana[this.level], blackTextStyle);
-        this.elements.manaNumber.resolution = 4;
-        this.elements.manaNumber.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
         this.elements.manaNumber.anchor.set(0.5);
 
         // TYPE
         this.elements.type = new PIXI.Text(capitalizeFirstLetter(type), blackTextStyle);
-        this.elements.type.resolution = 4;
-        this.elements.type.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
         this.elements.type.anchor.set(0.5);
 
         // Description
@@ -165,9 +156,9 @@ export default class Card {
             default: blackTextStyle,
             highlight: highlightTextStyle,
         });
-        this.elements.description.resolution = 4;
-        this.elements.description.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
         this.elements.description.anchor.set(0.5);
+
+        this.#setResolution();
 
         this.container.addChild(this.elements.shadow);
         this.container.addChild(this.elements.card);
@@ -206,6 +197,57 @@ export default class Card {
         if (rarity === 1) return "card_modifierRare";
         if (rarity === 2) return "card_modifierEpic";
         return "card_modifierLegendary";
+    }
+
+    // #################################################
+    //   RESOLUTION
+    // #################################################
+
+    #setResolution() {
+        // SHADOW
+        this.elements.shadow.resolution = 4;
+
+        // CARD
+        this.elements.card.resolution = 4;
+
+        // ART
+        this.elements.art.resolution = 4;
+
+        // ART BORDER
+        this.elements.artBorder.resolution = 4;
+
+        // NAME
+        this.elements.name.resolution = 4;
+        this.elements.name.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
+
+        // MANA
+        this.elements.mana.resolution = 4;
+
+        // MANA NUMBER
+        this.elements.manaNumber.resolution = 4;
+        this.elements.manaNumber.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
+
+        // TYPE
+        this.elements.type.resolution = 4;
+        this.elements.type.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
+
+        // DESCRIPTION
+        this.#setDescriptionResoultion(this.elements.description);
+    }
+
+    #setDescriptionResoultion(obj) {
+        if ("children" in obj) {
+            for (let i = 0; i < obj.children.length; i++) {
+                const child = obj.children[i];
+
+                if ("resolution" in child) {
+                    child.resolution = 4;
+                    child.texture.baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
+                }
+
+                this.#setDescriptionResoultion(child);
+            }
+        }
     }
 
     // #################################################
@@ -322,11 +364,11 @@ export default class Card {
         };
         this.elements.type.y = cardScaleFactor * 34.3;
 
-        // Description
+        // DESCRIPTION
         this.elements.description.setStyleForTag("default", {
             ...this.elements.description.tagStyles.default,
             strokeThickness: cardScaleFactor * 0.1,
-            fontSize: cardScaleFactor * 7,
+            fontSize: cardScaleFactor * 7.5,
             wordWrap: true,
             wordWrapWidth: cellSize * 1.9,
             lineSpacing: cardScaleFactor * -2,
@@ -334,7 +376,7 @@ export default class Card {
         this.elements.description.setStyleForTag("highlight", {
             ...this.elements.description.tagStyles.highlight,
             strokeThickness: cardScaleFactor * 0.1,
-            fontSize: cardScaleFactor * 7,
+            fontSize: cardScaleFactor * 7.5,
         });
         this.elements.description.x = -cellSize * 1.9 * 0.5;
         this.elements.description.y = cardScaleFactor * 54.5 - this.elements.description.textContainer.height / 2;
