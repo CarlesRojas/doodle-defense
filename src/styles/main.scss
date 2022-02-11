@@ -134,6 +134,7 @@
                 max-height: 100%;
                 min-height: 100%;
                 z-index: 10;
+                pointer-events: none;
 
                 &.filter {
                     position: absolute;
@@ -169,11 +170,69 @@
                 height: 100%;
                 max-height: 100%;
                 min-height: 100%;
+                pointer-events: none;
             }
 
             .coinNumber {
                 font-weight: 600;
                 text-align: center;
+            }
+        }
+    }
+
+    .secondBottomRow {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        right: 0;
+        left: 0;
+
+        .sign {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: all;
+
+            .icon {
+                pointer-events: all;
+                transition: opacity 0.2s ease-in-out;
+                height: 100%;
+                max-height: 100%;
+                min-height: 100%;
+                pointer-events: none;
+            }
+
+            .textContainers {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+
+                .currentMana {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .totalMana {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: unset;
+                    color: $paper;
+                    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+                }
+            }
+
+            .nextWave {
+                margin-right: 10%;
+                position: absolute;
+                font-weight: unset;
+                color: $paper;
+                text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
             }
         }
     }
@@ -192,6 +251,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            pointer-events: all;
 
             .icon {
                 pointer-events: all;
@@ -199,6 +259,7 @@
                 height: 100%;
                 max-height: 100%;
                 min-height: 100%;
+                pointer-events: none;
             }
 
             .numOfCards {

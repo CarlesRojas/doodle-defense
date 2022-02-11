@@ -7,6 +7,8 @@ import { Utils } from "../../contexts/Utils";
 
 import DrawPile from "../../resources/sprites/ui/DrawPile.png";
 import DiscardPile from "../../resources/sprites/ui/DiscardPile.png";
+import ManaAvailable from "../../resources/sprites/ui/ManaAvailable.png";
+import NextRound from "../../resources/sprites/ui/NextRound.png";
 import CoinsIcon from "../../resources/sprites/ui/Coin.png";
 import HealthBar_Left from "../../resources/sprites/ui/HealthBar_Left.png";
 import HealthBar_Middle from "../../resources/sprites/ui/HealthBar_Middle.png";
@@ -33,6 +35,11 @@ export default function UI() {
     const handleDiscardPileClick = useThrottle(() => {
         vibrate(40);
         emit("discardPileClicked"); // ROJAS do something when this is clicked
+    }, 250);
+
+    const handleNextRoundClick = useThrottle(() => {
+        vibrate(40);
+        emit("nextRoundClicked"); // ROJAS do something when this is clicked
     }, 250);
 
     // #################################################
@@ -63,20 +70,34 @@ export default function UI() {
     }, []);
 
     // #################################################
+    //   MANA
+    // #################################################
+
+    const [mana, setMana] = useState(2);
+    const [totalMana, setTotalMana] = useState(4);
+
+    const handleUpdateMana = useCallback(({ current, total }) => {
+        setMana(current);
+        setTotalMana(total);
+    }, []);
+
+    // #################################################
     //   EVENTS
     // #################################################
 
     useEffect(() => {
         sub("updateDrawPile", handleUpdateDrawPile);
         sub("updateDiscardPile", handleUpdateDiscardPile);
-        sub("updateHealth", handleUpdateHealth);
+        sub("updateHealth", handleUpdateHealth); // ROJAS IMPLEMENT
+        sub("updateMana", handleUpdateMana); // ROJAS IMPLEMENT
 
         return () => {
             unsub("updateDrawPile", handleUpdateDrawPile);
             unsub("updateDiscardPile", handleUpdateDiscardPile);
             unsub("updateHealth", handleUpdateHealth);
+            unsub("updateMana", handleUpdateMana);
         };
-    }, [sub, unsub, handleUpdateDrawPile, handleUpdateDiscardPile, handleUpdateHealth]);
+    }, [sub, unsub, handleUpdateDrawPile, handleUpdateDiscardPile, handleUpdateHealth, handleUpdateMana]);
 
     // #################################################
     //   RENDER
@@ -85,6 +106,7 @@ export default function UI() {
     const { height, width, left, top, cellSize } = gameDimensions;
 
     const healthPerentage = clamp(health / totalHealth) * 100;
+    const cardPileMargin = cellSize * 0.4;
 
     return (
         <div className="UI">
@@ -142,12 +164,60 @@ export default function UI() {
                 </div>
             </div>
 
+            <div className="secondBottomRow" style={{ height: `${cellSize}px`, bottom: `${cellSize * 2}px` }}>
+                <div className="sign" style={{ height: `${cellSize}px`, width: `${cellSize * 2}px` }}>
+                    <img src={ManaAvailable} alt="" className="icon" />
+
+                    <div className="textContainers">
+                        <p
+                            className="currentMana"
+                            style={{
+                                fontSize: `${cellSize * 0.43}px`,
+                                width: `${cellSize * 0.6}px`,
+                                lineHeight: `${cellSize * 0.43}px`,
+                            }}
+                        >
+                            {mana}
+                        </p>
+                        <p
+                            className="totalMana"
+                            style={{
+                                fontSize: `${cellSize * 0.35}px`,
+                                width: `${cellSize * 0.47}px`,
+                                lineHeight: `${cellSize * 0.35}px`,
+                            }}
+                        >
+                            {totalMana}
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    className="sign"
+                    style={{ right: `${cellSize * 0.25}px`, height: `${cellSize}px`, width: `${cellSize * 2}px` }}
+                    onClick={handleNextRoundClick}
+                >
+                    <img src={NextRound} alt="" className="icon" />
+                    <p
+                        className="nextWave"
+                        style={{ fontSize: `${cellSize * 0.35}px`, lineHeight: `${cellSize * 0.35}px` }}
+                    >
+                        {"Next Wave"}
+                    </p>
+                </div>
+            </div>
+
             <div className="bottomRow" style={{ height: `${cellSize * 2}px` }}>
                 <div
                     className="pile"
-                    style={{ height: `${cellSize * 2}px`, width: `${cellSize * 2}px`, padding: `${cellSize * 0.4}px` }}
+                    style={{
+                        height: `${cellSize * 2 - cardPileMargin * 2}px`,
+                        width: `${cellSize * 2 - cardPileMargin * 2}px`,
+                        margin: `${cardPileMargin}px`,
+                    }}
+                    onClick={handleDrawPileClick}
                 >
-                    <img src={DrawPile} alt="" className="icon" onClick={handleDrawPileClick} />
+                    <img src={DrawPile} alt="" className="icon" />
                     <p className="numOfCards" style={{ fontSize: `${cellSize * 0.43}px` }}>
                         {drawPile}
                     </p>
@@ -155,9 +225,14 @@ export default function UI() {
 
                 <div
                     className="pile"
-                    style={{ height: `${cellSize * 2}px`, width: `${cellSize * 2}px`, padding: `${cellSize * 0.4}px` }}
+                    style={{
+                        height: `${cellSize * 2 - cardPileMargin * 2}px`,
+                        width: `${cellSize * 2 - cardPileMargin * 2}px`,
+                        margin: `${cardPileMargin}px`,
+                    }}
+                    onClick={handleDiscardPileClick}
                 >
-                    <img src={DiscardPile} alt="" className="icon" onClick={handleDiscardPileClick} />
+                    <img src={DiscardPile} alt="" className="icon" />
                     <p className="numOfCards discard" style={{ fontSize: `${cellSize * 0.43}px` }}>
                         {discardPile}
                     </p>
