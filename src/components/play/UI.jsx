@@ -16,6 +16,9 @@ import HealthBar_Right from "../../resources/sprites/ui/HealthBar_Right.png";
 import HealthBar_LeftFilter from "../../resources/sprites/ui/HealthBar_LeftFilter.png";
 import HealthBar_MiddleFilter from "../../resources/sprites/ui/HealthBar_MiddleFilter.png";
 import HealthBar_RightFilter from "../../resources/sprites/ui/HealthBar_RightFilter.png";
+import MapIcon from "../../resources/sprites/ui/Map.png";
+import DeckIcon from "../../resources/sprites/ui/Deck.png";
+import SettingsIcon from "../../resources/sprites/ui/Settings.png";
 
 export default function UI() {
     const { emit, sub, unsub } = useContext(Events);
@@ -40,6 +43,21 @@ export default function UI() {
     const handleNextRoundClick = useThrottle(() => {
         vibrate(40);
         emit("nextRoundClicked"); // ROJAS do something when this is clicked
+    }, 250);
+
+    const handleMapClick = useThrottle(() => {
+        vibrate(40);
+        emit("mapClicked"); // ROJAS do something when this is clicked
+    }, 250);
+
+    const handleDeckClick = useThrottle(() => {
+        vibrate(40);
+        emit("deckClicked"); // ROJAS do something when this is clicked
+    }, 250);
+
+    const handleSettingsClick = useThrottle(() => {
+        vibrate(40);
+        emit("settingsClicked"); // ROJAS do something when this is clicked
     }, 250);
 
     // #################################################
@@ -161,6 +179,36 @@ export default function UI() {
                     <p className="coinNumber" style={{ fontSize: `${cellSize * 0.43}px` }}>
                         {625}
                     </p>
+                </div>
+
+                <div className="separator"></div>
+
+                <div
+                    className="button"
+                    style={{ height: `${cellSize}px`, width: `${cellSize}px` }}
+                    onClick={handleMapClick}
+                >
+                    <img src={MapIcon} alt="" className="icon" />
+                </div>
+
+                <div
+                    className="button"
+                    style={{ height: `${cellSize}px`, width: `${cellSize}px`, margin: `0 0 0 ${cellSize * 0.25}px` }}
+                    onClick={handleDeckClick}
+                >
+                    <img src={DeckIcon} alt="" className="icon" />
+                </div>
+
+                <div
+                    className="button"
+                    style={{
+                        height: `${cellSize}px`,
+                        width: `${cellSize}px`,
+                        margin: `0 ${cellSize * 0.5}px 0 ${cellSize * 0.25}px`,
+                    }}
+                    onClick={handleSettingsClick}
+                >
+                    <img src={SettingsIcon} alt="" className="icon" />
                 </div>
             </div>
 
