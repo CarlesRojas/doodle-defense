@@ -1,4 +1,5 @@
 import { useContext, useState, useCallback, useEffect } from "react";
+import cn from "classnames";
 import useGlobalState from "../../hooks/useGlobalState";
 import useThrottle from "../../hooks/useThrottle";
 
@@ -42,7 +43,7 @@ export default function UI() {
 
     const handleNextRoundClick = useThrottle(() => {
         vibrate(40);
-        emit("nextRoundClicked"); // ROJAS do something when this is clicked
+        emit("nextRoundClicked");
     }, 250);
 
     const handleMapClick = useThrottle(() => {
@@ -79,7 +80,7 @@ export default function UI() {
     //   HEALTH
     // #################################################
 
-    const [health, setHealth] = useState(60);
+    const [health, setHealth] = useState(100);
     const [totalHealth, setTotalHealth] = useState(100);
 
     const handleUpdateHealth = useCallback(({ current, total }) => {
@@ -100,22 +101,55 @@ export default function UI() {
     }, []);
 
     // #################################################
+    //   COINS
+    // #################################################
+
+    const [coins, setCoins] = useState(0);
+
+    const handleUpdateCoins = useCallback((ammount) => {
+        setCoins(ammount);
+    }, []);
+
+    // #################################################
+    //   NEXT WAVE
+    // #################################################
+
+    const [nextWaveActive, setNextWaveActive] = useState(false);
+
+    const handleSetNextWave = useCallback((value) => {
+        setNextWaveActive(value);
+    }, []);
+
+    // #################################################
     //   EVENTS
     // #################################################
 
     useEffect(() => {
         sub("updateDrawPile", handleUpdateDrawPile);
         sub("updateDiscardPile", handleUpdateDiscardPile);
-        sub("updateHealth", handleUpdateHealth); // ROJAS IMPLEMENT
-        sub("updateMana", handleUpdateMana); // ROJAS IMPLEMENT
+        sub("setNextWave", handleSetNextWave);
+        sub("updateHealth", handleUpdateHealth);
+        sub("updateMana", handleUpdateMana);
+        sub("updateCoins", handleUpdateCoins);
 
         return () => {
             unsub("updateDrawPile", handleUpdateDrawPile);
             unsub("updateDiscardPile", handleUpdateDiscardPile);
+            unsub("setNextWave", handleSetNextWave);
             unsub("updateHealth", handleUpdateHealth);
             unsub("updateMana", handleUpdateMana);
+            unsub("updateCoins", handleUpdateCoins);
         };
-    }, [sub, unsub, handleUpdateDrawPile, handleUpdateDiscardPile, handleUpdateHealth, handleUpdateMana]);
+    }, [
+        sub,
+        unsub,
+        handleUpdateDrawPile,
+        handleUpdateDiscardPile,
+        handleSetNextWave,
+        handleUpdateHealth,
+        handleUpdateMana,
+        handleUpdateCoins,
+    ]);
 
     // #################################################
     //   RENDER
@@ -177,7 +211,7 @@ export default function UI() {
                 <div className="coins" style={{ height: `${cellSize}px`, margin: `0 ${cellSize / 2}px` }}>
                     <img src={CoinsIcon} alt="" className="icon" />
                     <p className="coinNumber" style={{ fontSize: `${cellSize * 0.43}px` }}>
-                        {625}
+                        {coins}
                     </p>
                 </div>
 
@@ -208,7 +242,7 @@ export default function UI() {
                     }}
                     onClick={handleSettingsClick}
                 >
-                    <img src={SettingsIcon} alt="" className="icon" />
+                    <img src={SettingsIcon} alt="" className="icon settings" />
                 </div>
             </div>
 
@@ -241,7 +275,7 @@ export default function UI() {
                 </div>
 
                 <div
-                    className="sign"
+                    className={cn("sign", { disabled: !nextWaveActive })}
                     style={{ right: `${cellSize * 0.25}px`, height: `${cellSize}px`, width: `${cellSize * 2}px` }}
                     onClick={handleNextRoundClick}
                 >

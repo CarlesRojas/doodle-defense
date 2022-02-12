@@ -10,19 +10,6 @@ export default class Deck {
         this.container.sortableChildren = true;
         this.global.app.stage.addChild(this.container);
 
-        // DECK
-        this.deck = [
-            { id: "fortify", level: 1, object: null },
-            { id: "fortify", level: 1, object: null },
-            { id: "fortify", level: 1, object: null },
-            { id: "fortify", level: 0, object: null },
-            { id: "fortify", level: 0, object: null },
-            { id: "ballista", level: 1, object: null },
-            { id: "ballista", level: 1, object: null },
-            { id: "ballista", level: 0, object: null },
-            { id: "ballista", level: 0, object: null },
-        ];
-
         // PILES
         this.drawPile = [];
         this.hand = [];
@@ -31,6 +18,9 @@ export default class Deck {
         // DRAW CARDS
         this.cardsLeftToDraw = 0;
         this.cardsLeftToDiscard = 0;
+
+        // TURN
+        this.startingTurn = false;
 
         // SUB TO EVENTS
         this.global.events.sub("cardDrawn", this.#drawNextCard.bind(this));
@@ -74,27 +64,36 @@ export default class Deck {
     // #################################################
 
     #startCombat() {
-        this.drawPile = [...this.deck];
+        this.drawPile = [...this.global.run.deck];
         this.#updateUI();
-        this.#drawCards(5);
+    }
 
-        // setTimeout(() => {
-        //     this.#discardCards(4);
-        // }, 4000);
+    startNextTurn() {
+        this.startingTurn = true;
+
+        if (this.hand.length) this.#discardCards(this.hand.length);
+        else this.#drawNewCards();
     }
 
     // #################################################
     //   DRAW CARDS
     // #################################################
 
+    #drawNewCards() {
+        this.startingTurn = false;
+        this.#drawCards(5);
+    }
+
     #drawCards(number) {
-        this.cardsLeftToDraw = Math.min(number, this.deck.length);
+        this.cardsLeftToDraw = number;
         this.#drawNextCard();
     }
 
     #drawNextCard() {
         if (this.cardsLeftToDraw <= 0) return;
         --this.cardsLeftToDraw;
+
+        if (this.drawPile.length <= 0) this.#shuffleDiscardIntoDrawPile();
 
         const randomCard = Math.floor(Math.random() * this.drawPile.length);
         const card = this.drawPile.splice(randomCard, 1)[0];
@@ -110,6 +109,11 @@ export default class Deck {
 
         this.#updateUI();
         this.#updateCardsHandPositions();
+    }
+
+    #shuffleDiscardIntoDrawPile() {
+        this.drawPile = this.discardPile;
+        this.discardPile = [];
     }
 
     // #################################################
@@ -132,6 +136,8 @@ export default class Deck {
     }
 
     #discardNextCard() {
+        if (this.cardsLeftToDiscard <= 0) return;
+
         --this.cardsLeftToDiscard;
 
         const card = this.hand.pop();
@@ -145,8 +151,10 @@ export default class Deck {
         for (let i = 0; i < this.discardPile.length; i++)
             if (this.discardPile[i].object && this.discardPile[i].object.discarded) this.discardPile[i].object = null;
 
-        if (this.cardsLeftToDiscard <= 0) this.#updateCardsHandPositions();
-        else this.#discardNextCard();
+        if (this.cardsLeftToDiscard <= 0) {
+            this.#updateCardsHandPositions();
+            if (this.startingTurn) this.#drawNewCards();
+        } else this.#discardNextCard();
     }
 
     // #################################################

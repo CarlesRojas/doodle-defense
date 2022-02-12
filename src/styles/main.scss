@@ -79,8 +79,8 @@
         display: flex;
         align-items: center;
         justify-content: flex-start;
-        right: 0;
         top: 0;
+        right: 0;
         left: 0;
 
         .healthBar {
@@ -102,17 +102,17 @@
                     position: absolute;
                     height: 25%;
                     width: 97%;
-                    background-color: rgb(22, 22, 22);
                     z-index: 1;
+                    background-color: rgb(22, 22, 22);
 
                     .currentHealth {
-                        transition: width 0.5s ease-in-out;
                         position: absolute;
+                        transition: width 0.5s ease-in-out;
                         top: 0;
-                        left: 0;
                         bottom: 0;
-                        background-color: rgb(6, 167, 0);
+                        left: 0;
                         z-index: 5;
+                        background-color: rgb(6, 167, 0);
                     }
                 }
 
@@ -128,12 +128,12 @@
             }
 
             .icon {
+                pointer-events: none;
                 transition: opacity 0.2s ease-in-out;
                 height: 100%;
                 max-height: 100%;
                 min-height: 100%;
                 z-index: 10;
-                pointer-events: none;
 
                 &.filter {
                     position: absolute;
@@ -152,8 +152,8 @@
                 }
 
                 .healthTotal {
-                    font-weight: 600;
                     opacity: 0.5;
+                    font-weight: 600;
                 }
             }
         }
@@ -164,11 +164,11 @@
             justify-content: center;
 
             .icon {
+                pointer-events: none;
                 transition: opacity 0.2s ease-in-out;
                 height: 100%;
                 max-height: 100%;
                 min-height: 100%;
-                pointer-events: none;
             }
 
             .coinNumber {
@@ -182,17 +182,21 @@
         }
 
         .button {
+            pointer-events: all;
             display: flex;
             align-items: center;
             justify-content: center;
-            pointer-events: all;
 
             .icon {
+                pointer-events: none;
                 transition: opacity 0.2s ease-in-out;
                 height: 100%;
                 max-height: 100%;
                 min-height: 100%;
-                pointer-events: none;
+
+                &.settings {
+                    transform: rotateZ(30deg);
+                }
             }
         }
     }
@@ -206,27 +210,31 @@
         left: 0;
 
         .sign {
+            transition: opacity 0.2s ease-in-out;
+            pointer-events: all;
             position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            pointer-events: all;
+            opacity: 1;
+
+            &.disabled {
+                opacity: 0;
+            }
 
             .icon {
-                pointer-events: all;
-                transition: opacity 0.2s ease-in-out;
+                pointer-events: none;
                 height: 100%;
                 max-height: 100%;
                 min-height: 100%;
-                pointer-events: none;
             }
 
             .textContainers {
-                width: 100%;
+                position: absolute;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                position: absolute;
+                width: 100%;
 
                 .currentMana {
                     display: flex;
@@ -238,17 +246,17 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-weight: unset;
                     color: $paper;
+                    font-weight: unset;
                     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
                 }
             }
 
             .nextWave {
-                margin-right: 10%;
                 position: absolute;
-                font-weight: unset;
                 color: $paper;
+                margin-right: 10%;
+                font-weight: unset;
                 text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
             }
         }
@@ -264,19 +272,19 @@
         left: 0;
 
         .pile {
+            pointer-events: all;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            pointer-events: all;
 
             .icon {
                 pointer-events: all;
+                pointer-events: none;
                 transition: opacity 0.2s ease-in-out;
                 height: 100%;
                 max-height: 100%;
                 min-height: 100%;
-                pointer-events: none;
             }
 
             .numOfCards {
@@ -285,8 +293,8 @@
                 text-align: center;
 
                 &.discard {
-                    font-weight: unset;
                     color: $paper;
+                    font-weight: unset;
                     text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
                 }
             }

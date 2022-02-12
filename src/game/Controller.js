@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import { EventSystem } from "@pixi/events";
-import Combat from "./Combat";
+import Run from "./Run";
 import Loader from "./Loader";
 import constants from "../constants";
 import Background from "./Background";
@@ -23,6 +23,7 @@ export default class Controller {
             containers: {},
             loader: null,
             gameDimensions: null,
+            run: {},
         };
 
         this.#enableInteraction();
@@ -40,7 +41,7 @@ export default class Controller {
 
     #handleLoadingComplete() {
         this.global.containers.background = new Background(this.global);
-        this.global.containers.combat = new Combat(this.global);
+        this.global.containers.run = new Run(this.global);
         this.global.app.ticker.add(this.#gameLoop.bind(this));
     }
 
