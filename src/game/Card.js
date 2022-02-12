@@ -3,7 +3,7 @@ import TaggedText from "pixi-tagged-text";
 import CARDS from "./lists/cards";
 import { capitalizeFirstLetter, degToRad } from "./Utils";
 
-const CARD_WIDTH = 2.5; // CARD_WIDTH * cellsize = card width px
+const CARD_WIDTH = 3; // CARD_WIDTH * cellsize = card width px
 const ENTERING_SPEED = 40; // 1 cellsizes per second
 const SPEED = 10; // 1 cellsizes per second
 
@@ -322,74 +322,71 @@ export default class Card {
     handleResize() {
         const { cellSize } = this.global.gameDimensions;
 
-        // Shadow
-        const shadowScaleFactor = (cellSize * CARD_WIDTH * 1.1) / this.initialWidth.shadow;
-        this.elements.shadow.scale.set(shadowScaleFactor);
-        this.elements.shadow.y = shadowScaleFactor * (25 + 12);
-        this.elements.shadow.x = -shadowScaleFactor * 10;
-
         // Card
         const cardScaleFactor = (cellSize * CARD_WIDTH) / this.initialWidth.card;
         this.elements.card.scale.set(cardScaleFactor);
-        this.elements.card.y = cardScaleFactor * 14;
+        const cardWidth = this.elements.card.width;
+        this.elements.card.y = cardWidth * 0.23;
+
+        // Shadow
+        const shadowScaleFactor = (cellSize * CARD_WIDTH * 1.1) / this.initialWidth.shadow;
+        this.elements.shadow.scale.set(shadowScaleFactor);
+        this.elements.shadow.y = cardWidth * 0.28;
+        this.elements.shadow.x = -cardWidth * 0.05;
 
         // Art
         const artScaleFactor = (cellSize * (CARD_WIDTH * 0.5)) / this.initialWidth.art;
         this.elements.artBorder.scale.set(artScaleFactor);
         this.elements.art.scale.set(artScaleFactor);
 
-        // REFERENCE
-        const cardWidth = this.elements.card.width;
-
         // Name
         this.elements.name.style = {
             ...this.elements.name.style,
-            strokeThickness: cardWidth * 0.1,
-            fontSize: cardWidth * 0.1,
+            strokeThickness: cardWidth * 0.02,
+            fontSize: cardWidth * 0.12,
         };
-        this.elements.name.y = -cardWidth * 2;
+        this.elements.name.y = -cardWidth * 0.5;
 
         // Mana
-        const manaScaleFactor = (cellSize * (CARD_WIDTH * 0.22)) / this.initialWidth.mana;
-        this.elements.mana.scale.set(manaScaleFactor);
+        this.elements.mana.scale.set(cardScaleFactor);
         this.elements.mana.interactive = false;
-        this.elements.mana.x = -manaScaleFactor * 33;
-        this.elements.mana.y = -manaScaleFactor * 40;
+        this.elements.mana.x = -cardWidth * 0.42;
+        this.elements.mana.y = -cardWidth * 0.5;
 
         // Mana number
         this.elements.manaNumber.style = {
             ...this.elements.manaNumber.style,
-            strokeThickness: cardScaleFactor * 0.3,
-            fontSize: cardScaleFactor * 10,
+            strokeThickness: cardWidth * 0.005,
+            fontSize: cardWidth * 0.15,
         };
         this.elements.manaNumber.interactive = false;
-        this.elements.manaNumber.y = -cardScaleFactor * 39.5;
-        this.elements.manaNumber.x = -cardScaleFactor * 33.3;
+        this.elements.manaNumber.x = -cardWidth * 0.42;
+        this.elements.manaNumber.y = -cardWidth * 0.488;
 
         // Type
         this.elements.type.style = {
             ...this.elements.type.style,
-            strokeThickness: cardScaleFactor * 0.2,
-            fontSize: cardScaleFactor * 5,
+            strokeThickness: cardWidth * 0.002,
+            fontSize: cardWidth * 0.07,
         };
-        this.elements.type.y = cardScaleFactor * 34.3;
+        this.elements.type.y = cardWidth * 0.445;
 
         // DESCRIPTION
         this.elements.description.setStyleForTag("default", {
             ...this.elements.description.tagStyles.default,
-            strokeThickness: cardScaleFactor * 0.1,
-            fontSize: cardScaleFactor * 7.5,
+            strokeThickness: cardWidth * 0.002,
+            fontSize: cardWidth * 0.095,
             wordWrap: true,
-            wordWrapWidth: cardScaleFactor * 64,
-            lineSpacing: cardScaleFactor * -2.5,
+            wordWrapWidth: cardWidth * 0.8,
+            lineSpacing: cardWidth * -0.01,
         });
         this.elements.description.setStyleForTag("highlight", {
             ...this.elements.description.tagStyles.highlight,
-            strokeThickness: cardScaleFactor * 0.1,
-            fontSize: cardScaleFactor * 7.5,
+            strokeThickness: cardWidth * 0.002,
+            fontSize: cardWidth * 0.095,
         });
-        this.elements.description.x = -cardScaleFactor * 64 * 0.5;
-        this.elements.description.y = cardScaleFactor * 54.5 - this.elements.description.textContainer.height / 2;
+        this.elements.description.x = -cardWidth * 0.8 * 0.5;
+        this.elements.description.y = cardWidth * 0.74 - this.elements.description.textContainer.height / 2;
 
         this.#updateTargetPosition();
     }
@@ -447,7 +444,7 @@ export default class Card {
             y:
                 this.global.app.screen.height + // Bottom of the screen
                 (this.isHighlighted
-                    ? -(cellSize * CARD_WIDTH * cardRatio * 0.75)
+                    ? -(cellSize * CARD_WIDTH * cardRatio * 0.8)
                     : -cellSize * 0.5 +
                       Math.abs(currentCardDisp + (evenCards && currentCardDisp < 0 ? 1 : 0)) * cellSize * heightDisp), // Move down the further away
         };
@@ -459,9 +456,9 @@ export default class Card {
 
         this.targetScale = this.isHighlighted ? 1.2 : 1;
 
-        this.targetPosition = { x: this.global.app.screen.width / 2, y: this.global.app.screen.height / 2 };
-        this.targetAngleInDeg = 0;
-        this.targetScale = 1;
+        // this.targetPosition = { x: this.global.app.screen.width / 2, y: this.global.app.screen.height / 2 };
+        // this.targetAngleInDeg = 0;
+        // this.targetScale = 1;
     }
 
     #animateCard(deltaTime) {
