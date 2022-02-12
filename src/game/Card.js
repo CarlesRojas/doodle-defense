@@ -2,7 +2,6 @@ import * as PIXI from "pixi.js";
 import TaggedText from "pixi-tagged-text";
 import CARDS from "./lists/cards";
 import { capitalizeFirstLetter, degToRad } from "./Utils";
-import CardTrail from "./CardTrail";
 
 const CARD_WIDTH = 3; // CARD_WIDTH * cellsize = card width px
 const ENTERING_SPEED = 40; // 40 cellsizes per second
@@ -63,9 +62,6 @@ export default class Card {
         this.isMoving = false;
         this.initialY = 0;
 
-        // TRAIL
-        this.trail = new CardTrail(this.global, this.handContainer, this.container);
-
         // CREATE CARD
         this.#instantiateCard();
 
@@ -81,8 +77,6 @@ export default class Card {
     }
 
     destructor() {
-        this.trail.destructor();
-
         // UNSUB TFROM EVENTS
         this.container.removeEventListener("pointerenter", this.#handlePointerEnter.bind(this));
         this.container.removeEventListener("pointerleave", this.#handlePointerLeave.bind(this));
@@ -395,8 +389,6 @@ export default class Card {
         this.elements.description.y = cardWidth * 0.74 - this.elements.description.textContainer.height / 2;
 
         this.#updateTargetPosition();
-
-        this.trail.handleResize();
     }
 
     // #################################################
@@ -568,7 +560,6 @@ export default class Card {
 
     gameLoop(deltaTime) {
         this.#animateCard(deltaTime);
-        this.trail.gameLoop(deltaTime);
         this.#updateZIndex();
     }
 }
