@@ -76,7 +76,7 @@ export default class Deck {
     #startCombat() {
         this.drawPile = [...this.deck];
         this.#updateUI();
-        this.#drawCards(5);
+        this.#drawCards(1);
 
         // setTimeout(() => {
         //     this.#discardCards(4);

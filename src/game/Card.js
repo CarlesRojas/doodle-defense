@@ -3,7 +3,7 @@ import TaggedText from "pixi-tagged-text";
 import CARDS from "./lists/cards";
 import { capitalizeFirstLetter, degToRad } from "./Utils";
 
-const CARD_WIDTH = 3; // CARD_WIDTH * cellsize = card width px
+const CARD_WIDTH = 2.5; // CARD_WIDTH * cellsize = card width px
 const ENTERING_SPEED = 40; // 1 cellsizes per second
 const SPEED = 10; // 1 cellsizes per second
 
@@ -338,13 +338,16 @@ export default class Card {
         this.elements.artBorder.scale.set(artScaleFactor);
         this.elements.art.scale.set(artScaleFactor);
 
+        // REFERENCE
+        const cardWidth = this.elements.card.width;
+
         // Name
         this.elements.name.style = {
             ...this.elements.name.style,
-            strokeThickness: cardScaleFactor * 1.5,
-            fontSize: cardScaleFactor * 8.5,
+            strokeThickness: cardWidth * 0.1,
+            fontSize: cardWidth * 0.1,
         };
-        this.elements.name.y = -cardScaleFactor * 39.5;
+        this.elements.name.y = -cardWidth * 2;
 
         // Mana
         const manaScaleFactor = (cellSize * (CARD_WIDTH * 0.22)) / this.initialWidth.mana;
@@ -456,9 +459,9 @@ export default class Card {
 
         this.targetScale = this.isHighlighted ? 1.2 : 1;
 
-        // this.targetPosition = { x: this.global.app.screen.width / 2, y: this.global.app.screen.height / 2 };
-        // this.targetAngleInDeg = 0;
-        // this.targetScale = 1;
+        this.targetPosition = { x: this.global.app.screen.width / 2, y: this.global.app.screen.height / 2 };
+        this.targetAngleInDeg = 0;
+        this.targetScale = 1;
     }
 
     #animateCard(deltaTime) {
