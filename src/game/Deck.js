@@ -1,5 +1,8 @@
 import * as PIXI from "pixi.js";
 import Card from "./Card";
+import { degToRad, sleep } from "./Utils";
+
+const SPEED = 75;
 
 export default class Deck {
     constructor(global) {
@@ -21,6 +24,9 @@ export default class Deck {
 
         // TURN
         this.startingTurn = false;
+
+        // DISCARD TO DRAW ANIMATION
+        this.discardToDrawCards = [];
 
         // SUB TO EVENTS
         this.global.events.sub("cardDrawn", this.#drawNextCard.bind(this));
@@ -57,6 +63,8 @@ export default class Deck {
 
         for (let i = 0; i < this.discardPile.length; i++)
             if (this.discardPile[i].object) this.discardPile[i].object.gameLoop(deltaTime);
+
+        this.#animateDiscardToDrawCards(deltaTime);
     }
 
     // #################################################
@@ -81,7 +89,7 @@ export default class Deck {
 
     #drawNewCards() {
         this.startingTurn = false;
-        this.#drawCards(1);
+        this.#drawCards(5);
     }
 
     #drawCards(number) {
@@ -91,9 +99,8 @@ export default class Deck {
 
     #drawNextCard() {
         if (this.cardsLeftToDraw <= 0) return;
+        if (this.drawPile.length <= 0) return this.#shuffleDiscardIntoDrawPile();
         --this.cardsLeftToDraw;
-
-        if (this.drawPile.length <= 0) this.#shuffleDiscardIntoDrawPile();
 
         const randomCard = Math.floor(Math.random() * this.drawPile.length);
         const card = this.drawPile.splice(randomCard, 1)[0];
@@ -111,9 +118,14 @@ export default class Deck {
         this.#updateCardsHandPositions();
     }
 
+    // #################################################
+    //   DISCARD TO DRAW PILE
+    // #################################################
+
     #shuffleDiscardIntoDrawPile() {
         this.drawPile = this.discardPile;
         this.discardPile = [];
+        this.#spawnDiscardToDrawCards();
     }
 
     // #################################################
@@ -164,6 +176,71 @@ export default class Deck {
     #updateCardsHandPositions() {
         for (let i = 0; i < this.hand.length; i++)
             this.hand[i].object.updateHandPosition(i + this.cardsLeftToDraw, this.hand.length + this.cardsLeftToDraw);
+    }
+
+    // #################################################
+    //   DISCARD TO DRAW CARDS
+    // #################################################
+
+    async #spawnDiscardToDrawCards() {
+        const { cellSize } = this.global.gameDimensions;
+        this.discardToDrawCards = [];
+
+        const numOfCards = 4;
+        for (let i = 0; i < numOfCards; i++) {
+            const card = PIXI.Sprite.from(this.global.app.loader.resources.card_back.texture);
+            card.anchor.set(0.5);
+            card.x = this.global.app.screen.width - cellSize;
+            card.y = this.global.app.screen.height - cellSize;
+
+            const scaleFactor = cellSize / card.width;
+            card.scale.set(scaleFactor);
+
+            this.discardToDrawCards.push(card);
+            this.container.addChild(this.discardToDrawCards[this.discardToDrawCards.length - 1]);
+
+            await sleep(50);
+        }
+    }
+
+    #dispawnDiscardToDrawCards(index) {
+        if (index < 0 || index >= this.discardToDrawCards.length) return false;
+
+        this.container.removeChild(this.discardToDrawCards[index]);
+        this.discardToDrawCards.splice(index, 1);
+
+        console.log(this.discardToDrawCards);
+        if (this.discardToDrawCards.length <= 0) this.#drawNextCard();
+
+        return true;
+    }
+
+    #animateDiscardToDrawCards(deltaTime) {
+        const { cellSize } = this.global.gameDimensions;
+        const step = cellSize * SPEED * deltaTime;
+
+        const clamp = (a, min = 0, max = 1) => Math.min(max, Math.max(min, a));
+        const lerp = (start, end, t) => start * (1 - t) + end * t;
+
+        for (let i = 0; i < this.discardToDrawCards.length; i++) {
+            const element = this.discardToDrawCards[i];
+            const halfScreenWidth = (this.global.app.screen.width - cellSize * 2) / 2;
+            const isInSecondHalf = element.x > this.global.app.screen.width / 2;
+
+            const angle = isInSecondHalf
+                ? lerp(180, 225, clamp((element.x - this.global.app.screen.width / 2) / halfScreenWidth))
+                : lerp(135, 180, clamp((element.x - cellSize) / halfScreenWidth));
+
+            const xMult = Math.cos(degToRad(angle));
+            const yMult = Math.sin(degToRad(angle));
+
+            element.x += xMult * step;
+            element.y += yMult * step * 0.5;
+
+            if (element.x <= cellSize) {
+                if (this.#dispawnDiscardToDrawCards(i)) --i;
+            }
+        }
     }
 
     // #################################################
