@@ -19,6 +19,7 @@ import Card_ModifierRare from "../resources/sprites/cards/Card_ModifierRare.png"
 import Card_ModifierLegendary from "../resources/sprites/cards/Card_ModifierLegendary.png";
 import Card_Mana from "../resources/sprites/cards/Card_Mana.png";
 import Card_Shadow from "../resources/sprites/cards/Card_Shadow.png";
+import Card_Back from "../resources/sprites/cards/Card_Back.png";
 
 // EFFECTS
 import Effect_Bolt from "../resources/sprites/effects/Effect_Bolt.png";
@@ -161,6 +162,7 @@ export default class Loader {
         this.global.app.loader.add("card_modifierLegendary", Card_ModifierLegendary);
         this.global.app.loader.add("card_mana", Card_Mana);
         this.global.app.loader.add("card_shadow", Card_Shadow);
+        this.global.app.loader.add("card_back", Card_Back);
     }
 
     #loadEffects() {

@@ -2,10 +2,11 @@ import * as PIXI from "pixi.js";
 import TaggedText from "pixi-tagged-text";
 import CARDS from "./lists/cards";
 import { capitalizeFirstLetter, degToRad } from "./Utils";
+import CardTrail from "./CardTrail";
 
 const CARD_WIDTH = 3; // CARD_WIDTH * cellsize = card width px
-const ENTERING_SPEED = 40; // 1 cellsizes per second
-const SPEED = 10; // 1 cellsizes per second
+const ENTERING_SPEED = 40; // 40 cellsizes per second
+const SPEED = 10; // 10 cellsizes per second
 
 export default class Card {
     constructor(global, handContainer, id, level, handPosition, totalCardsInHand) {
@@ -49,7 +50,7 @@ export default class Card {
         this.container.rotation = degToRad(this.targetAngleInDeg);
         this.container.position.set(this.targetPosition.x, this.targetPosition.y);
         this.container.scale.set(this.targetScale);
-        this.container.zIndex = handPosition;
+        this.container.zIndex = handPosition + 100;
         this.container.interactive = false;
         this.handContainer.addChild(this.container);
 
@@ -61,6 +62,9 @@ export default class Card {
         this.isReturningToHand = false;
         this.isMoving = false;
         this.initialY = 0;
+
+        // TRAIL
+        this.trail = new CardTrail(this.global, this.handContainer, this.container);
 
         // CREATE CARD
         this.#instantiateCard();
@@ -77,6 +81,8 @@ export default class Card {
     }
 
     destructor() {
+        this.trail.destructor();
+
         // UNSUB TFROM EVENTS
         this.container.removeEventListener("pointerenter", this.#handlePointerEnter.bind(this));
         this.container.removeEventListener("pointerleave", this.#handlePointerLeave.bind(this));
@@ -389,6 +395,8 @@ export default class Card {
         this.elements.description.y = cardWidth * 0.74 - this.elements.description.textContainer.height / 2;
 
         this.#updateTargetPosition();
+
+        this.trail.handleResize();
     }
 
     // #################################################
@@ -551,7 +559,7 @@ export default class Card {
     }
 
     #updateZIndex() {
-        this.container.zIndex = this.isHighlighted || this.isMoving ? 100 : this.handPosition;
+        this.container.zIndex = this.isHighlighted || this.isMoving ? 200 : this.handPosition + 100;
     }
 
     // #################################################
@@ -560,6 +568,7 @@ export default class Card {
 
     gameLoop(deltaTime) {
         this.#animateCard(deltaTime);
+        this.trail.gameLoop(deltaTime);
         this.#updateZIndex();
     }
 }

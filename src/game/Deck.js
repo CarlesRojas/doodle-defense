@@ -81,7 +81,7 @@ export default class Deck {
 
     #drawNewCards() {
         this.startingTurn = false;
-        this.#drawCards(5);
+        this.#drawCards(1);
     }
 
     #drawCards(number) {
