@@ -6,8 +6,8 @@ const CARDS = {
         artID: "structure_ballista",
         mana: [1, 2],
         text: [
-            "Fire a bolt every second. Each bolt deals 1 damage.",
-            "Fire a bolt every second. Each bolt deals 2 damage.",
+            "Fire a bolt every second. Each bolt deals 1 damage. <highlight>Exhaust</highlight>",
+            "Fire a bolt every second. Each bolt deals 2 damage. <highlight>Exhaust</highlight>",
         ],
         popups: [null, null],
         rarity: 0,

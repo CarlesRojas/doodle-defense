@@ -351,7 +351,7 @@ export default class Card {
         this.elements.mana.scale.set(cardScaleFactor);
         this.elements.mana.interactive = false;
         this.elements.mana.x = -cardWidth * 0.42;
-        this.elements.mana.y = -cardWidth * 0.5;
+        this.elements.mana.y = -cardWidth * 0.51;
 
         // Mana number
         this.elements.manaNumber.style = {
@@ -361,7 +361,7 @@ export default class Card {
         };
         this.elements.manaNumber.interactive = false;
         this.elements.manaNumber.x = -cardWidth * 0.42;
-        this.elements.manaNumber.y = -cardWidth * 0.488;
+        this.elements.manaNumber.y = -cardWidth * 0.498;
 
         // Type
         this.elements.type.style = {
