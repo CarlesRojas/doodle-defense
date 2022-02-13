@@ -86,7 +86,10 @@ export default class Maze {
             const column = [];
             for (let j = 0; j < gridY; j++)
                 column.push({
-                    floor: j < topDeadCells || j >= gridY - bottomDeadCells ? "blocked" : "empty",
+                    floor:
+                        j < topDeadCells || j >= gridY - bottomDeadCells || i > gridX - rightDeadCells
+                            ? "blocked"
+                            : "empty",
                     object: null,
                 });
             grid.push(column);
@@ -157,8 +160,17 @@ export default class Maze {
         }
 
         // ENEMY PLAZA
-        this.enemyPlaza.push({ x: this.path[this.path.length - 1].x + 1, y: this.path[this.path.length - 1].y });
-        this.#drawCell(this.enemyPlaza[0], "plaza_right");
+        this.enemyPlaza = [];
+        for (let i = -1; i < 2; i++) {
+            this.enemyPlaza.push({
+                x: this.path[this.path.length - 1].x + 1,
+                y: this.path[this.path.length - 1].y + i,
+            });
+
+            if (i === -1) this.#drawCell(this.enemyPlaza[0], "plaza_verticalLeft_enemyTop");
+            if (i === 0) this.#drawCell(this.enemyPlaza[1], "plaza_pointsLeft");
+            if (i === 1) this.#drawCell(this.enemyPlaza[2], "plaza_verticalLeft_enemyBottom");
+        }
 
         // Save to grid
         for (let i = 0; i < this.enemyPlaza.length; i++) {

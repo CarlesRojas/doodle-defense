@@ -53,6 +53,8 @@ import Plaza_Left from "../resources/sprites/plaza/Plaza_Left.png";
 import Plaza_Right from "../resources/sprites/plaza/Plaza_Right.png";
 import Plaza_Top from "../resources/sprites/plaza/Plaza_Top.png";
 import Plaza_Bottom from "../resources/sprites/plaza/Plaza_Bottom.png";
+import Plaza_VerticalLeft_EnemyTop from "../resources/sprites/plaza/Plaza_VerticalLeft_EnemyTop.png";
+import Plaza_VerticalLeft_EnemyBottom from "../resources/sprites/plaza/Plaza_VerticalLeft_EnemyBottom.png";
 
 // SKILLS
 import Skill_Fortify from "../resources/sprites/skills/Skill_Fortify.png";
@@ -199,6 +201,8 @@ export default class Loader {
         this.global.app.loader.add("plaza_right", Plaza_Right);
         this.global.app.loader.add("plaza_top", Plaza_Top);
         this.global.app.loader.add("plaza_bottom", Plaza_Bottom);
+        this.global.app.loader.add("plaza_verticalLeft_enemyTop", Plaza_VerticalLeft_EnemyTop);
+        this.global.app.loader.add("plaza_verticalLeft_enemyBottom", Plaza_VerticalLeft_EnemyBottom);
     }
 
     #loadSkills() {
