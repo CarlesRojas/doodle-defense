@@ -209,7 +209,6 @@ export default class Deck {
         this.container.removeChild(this.discardToDrawCards[index]);
         this.discardToDrawCards.splice(index, 1);
 
-        console.log(this.discardToDrawCards);
         if (this.discardToDrawCards.length <= 0) this.#drawNextCard();
 
         return true;

@@ -52,20 +52,39 @@ export default class Maze {
 
         // CHOOSE RANDOM EXIT
         let randomExit = 0;
-        do randomExit = Math.floor(Math.random() * (mazeHeight - 2)) + 1;
-        while (!maze[randomExit][mazeWidth - 2] && randomEntry !== randomExit);
+        do {
+            randomExit = Math.floor(Math.random() * (mazeHeight - 2)) + 1;
+            console.log(randomExit);
+        } while (!maze[randomExit][mazeWidth - 2] || randomEntry === randomExit);
 
         var start = [randomEntry, 1];
         var end = [randomExit, mazeWidth - 2];
         var solve = mazeGenerator.solve(start, end);
 
         this.path = [];
+        let minY = mazeHeight;
+        let maxY = 0;
         for (let i = 0; i < solve.length; i++) {
             const [y, x] = solve[i];
-            if (i === 0) this.path.push({ x: x + leftDeadCells - 1, y: y + topDeadCells });
-            this.path.push({ x: x + leftDeadCells, y: y + topDeadCells });
-            if (i === solve.length - 1) this.path.push({ x: x + leftDeadCells + 1, y: y + topDeadCells });
+            const finalY = y + topDeadCells;
+
+            if (i === 0 ? finalY - 1 : finalY < minY) minY = i === 0 ? finalY - 1 : finalY;
+            if (i === 0 ? finalY + 1 : finalY > maxY) maxY = i === 0 ? finalY + 1 : finalY;
+
+            if (i === 0) this.path.push({ x: x + leftDeadCells - 1, y: finalY });
+            this.path.push({ x: x + leftDeadCells, y: finalY });
+            if (i === solve.length - 1) this.path.push({ x: x + leftDeadCells + 1, y: finalY });
         }
+
+        // CENTER MAZE VERTICALLY
+        const emptyTopCells = minY;
+        const emptyBottomCells = mazeHeight - maxY + 1;
+        const displacement = Math.floor((emptyBottomCells - emptyTopCells) / 2);
+
+        for (let i = 0; i < this.path.length; i++) this.path[i].y += displacement;
+
+        // console.log(displacement);
+        // console.log(this.path);
     }
 
     #drawMaze() {
