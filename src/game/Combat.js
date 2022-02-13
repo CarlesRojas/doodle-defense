@@ -5,6 +5,10 @@ export default class Combat {
     constructor(global) {
         this.global = global;
 
+        this.global.combat = {
+            grid: [],
+        };
+
         // Create maze
         this.maze = new Maze(this.global);
 

@@ -52,10 +52,8 @@ export default class Maze {
 
         // CHOOSE RANDOM EXIT
         let randomExit = 0;
-        do {
-            randomExit = Math.floor(Math.random() * (mazeHeight - 2)) + 1;
-            console.log(randomExit);
-        } while (!maze[randomExit][mazeWidth - 2] || randomEntry === randomExit);
+        do randomExit = Math.floor(Math.random() * (mazeHeight - 2)) + 1;
+        while (!maze[randomExit][mazeWidth - 2] || randomEntry === randomExit);
 
         var start = [randomEntry, 1];
         var end = [randomExit, mazeWidth - 2];
@@ -80,11 +78,28 @@ export default class Maze {
         const emptyTopCells = minY;
         const emptyBottomCells = mazeHeight - maxY + 1;
         const displacement = Math.floor((emptyBottomCells - emptyTopCells) / 2);
-
         for (let i = 0; i < this.path.length; i++) this.path[i].y += displacement;
 
-        // console.log(displacement);
-        // console.log(this.path);
+        // CREATE GRID
+        const grid = [];
+        for (let i = 0; i < gridX; i++) {
+            const column = [];
+            for (let j = 0; j < gridY; j++)
+                column.push({
+                    floor: j < topDeadCells || j >= gridY - bottomDeadCells ? "blocked" : "empty",
+                    object: null,
+                });
+            grid.push(column);
+        }
+
+        for (let i = 0; i < this.path.length; i++) {
+            const { x, y } = this.path[i];
+
+            if (x < 0 || x >= grid.length || y < 0 || y >= grid[0].length) continue;
+            if (grid[x][y].floor === "empty") grid[x][y].floor = "path";
+        }
+
+        this.global.combat.grid = grid;
     }
 
     #drawMaze() {
@@ -133,9 +148,23 @@ export default class Maze {
                 else if (i === 2 && j === 2) this.#drawCell(this.playerPlaza[i][j], "plaza_topLeft");
             }
 
+        // Save to grid
+        for (let i = 0; i < this.playerPlaza.length; i++) {
+            for (let j = 0; j < this.playerPlaza[i].length; j++) {
+                const { x, y } = this.playerPlaza[i][j];
+                this.global.combat.grid[x][y].floor = "playerPlaza";
+            }
+        }
+
         // ENEMY PLAZA
         this.enemyPlaza.push({ x: this.path[this.path.length - 1].x + 1, y: this.path[this.path.length - 1].y });
         this.#drawCell(this.enemyPlaza[0], "plaza_right");
+
+        // Save to grid
+        for (let i = 0; i < this.enemyPlaza.length; i++) {
+            const { x, y } = this.enemyPlaza[i];
+            this.global.combat.grid[x][y].floor = "enemyPlaza";
+        }
     }
 
     #drawCell(obj, type) {
