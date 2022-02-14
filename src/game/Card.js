@@ -4,7 +4,7 @@ import CARDS from "./lists/cards";
 import { capitalizeFirstLetter, degToRad } from "./Utils";
 
 const CARD_WIDTH = 3; // CARD_WIDTH * cellsize = card width px
-const ENTERING_SPEED = 40; // 40 cellsizes per second
+const ENTERING_SPEED = 60; // 50 cellsizes per second
 const SPEED = 10; // 10 cellsizes per second
 
 export default class Card {
