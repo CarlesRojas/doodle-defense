@@ -99,6 +99,29 @@ export default class Maze {
             if (grid[x][y].floor === "empty") grid[x][y].floor = "path";
         }
 
+        // SIMPLIFIED PATH
+        const simplifiedPath = [];
+        let goingHorizontal = true;
+        for (let i = 0; i < this.path.length; i++) {
+            const { x, y } = this.path[i];
+
+            if (i === 0) simplifiedPath.push({ x: x - 1, y });
+
+            const { x: lastX, y: lastY } = simplifiedPath[simplifiedPath.length - 1];
+
+            if (goingHorizontal && lastY !== y) {
+                simplifiedPath.push({ x: this.path[i - 1].x, y: this.path[i - 1].y });
+                goingHorizontal = false;
+            } else if (!goingHorizontal && lastX !== x) {
+                simplifiedPath.push({ x: this.path[i - 1].x, y: this.path[i - 1].y });
+                goingHorizontal = true;
+            }
+
+            if (i === this.path.length - 1) simplifiedPath.push({ x: x + 1, y });
+        }
+        simplifiedPath.reverse();
+
+        this.global.enemyPath = simplifiedPath;
         this.global.combat.grid = grid;
     }
 
