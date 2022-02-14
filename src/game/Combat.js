@@ -1,5 +1,7 @@
 import Deck from "./Deck";
 import Maze from "./Maze";
+import COMBATS from "./lists/combats";
+import Wave from "./Wave";
 
 export default class Combat {
     constructor(global) {
@@ -7,7 +9,15 @@ export default class Combat {
 
         this.global.combat = {
             grid: [],
+            enemyPath: [],
+            info: {},
+            nextWaveIndex: 0,
+            currentWave: null,
         };
+
+        // Choose a random combat
+        const combatId = Object.keys(COMBATS)[Math.floor(Math.random() * Object.keys(COMBATS).length)];
+        this.global.combat.info = COMBATS[combatId];
 
         // Create maze
         this.maze = new Maze(this.global);
@@ -51,11 +61,24 @@ export default class Combat {
 
         // Send wave in 10 seconds
         this.sendWaveTimeout = setTimeout(() => {
-            console.log("SEND WAVE");
+            if (this.global.combat.currentWave) this.global.combat.currentWave.destructor();
 
-            // Update UI
-            this.#setNextWaveUI(true);
+            this.global.combat.currentWave = new Wave(
+                this.global,
+                this.global.combat.info.waves[this.global.combat.nextWaveIndex],
+                this.#handleWaveFinished.bind(this)
+            );
+
+            this.global.combat.nextWaveIndex++;
         }, 2 * 1000);
+    }
+
+    #handleWaveFinished() {
+        if (this.global.combat.nextWaveIndex >= this.global.combat.info.waves.length)
+            return console.log("COMBAT VCTORY"); // ROJAS THIS SHOULD TRIGGER WHEN ALL THE ENEMIES OF THE LAST WAVE DIE
+
+        // Update UI
+        this.#setNextWaveUI(true);
     }
 
     // #################################################
@@ -65,6 +88,7 @@ export default class Combat {
     handleResize() {
         this.maze.handleResize();
         this.deck.handleResize();
+        if (this.global.combat.currentWave) this.global.combat.currentWave.handleResize();
     }
 
     // #################################################
@@ -74,6 +98,7 @@ export default class Combat {
     gameLoop(deltaTime) {
         this.maze.gameLoop(deltaTime);
         this.deck.gameLoop(deltaTime);
+        if (this.global.combat.currentWave) this.global.combat.currentWave.gameLoop(deltaTime);
     }
 
     // #################################################

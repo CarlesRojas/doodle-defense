@@ -24,7 +24,6 @@ export default class Controller {
             loader: null,
             gameDimensions: null,
             run: {},
-            combat: {},
         };
 
         this.#enableInteraction();

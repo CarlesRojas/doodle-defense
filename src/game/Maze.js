@@ -17,7 +17,9 @@ export default class Maze {
         this.handleResize();
     }
 
-    destructor() {}
+    destructor() {
+        this.global.app.stage.removeChild(this.container);
+    }
 
     // #################################################
     //   Create maze
@@ -121,7 +123,7 @@ export default class Maze {
         }
         simplifiedPath.reverse();
 
-        this.global.enemyPath = simplifiedPath;
+        this.global.combat.enemyPath = simplifiedPath;
         this.global.combat.grid = grid;
     }
 

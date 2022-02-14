@@ -30,10 +30,16 @@ export default class Run {
         // Create maze
         this.combat = new Combat(this.global);
         this.handleResize();
+
+        // SUB TO EVENTS
+        this.global.events.sub("damagePlayer", this.#damagePlayer.bind(this));
     }
 
     destructor() {
         this.combat.destructor();
+
+        // UNSUB TFROM EVENTS
+        this.global.events.unsub("damagePlayer", this.#damagePlayer.bind(this));
     }
 
     // #################################################
@@ -50,6 +56,17 @@ export default class Run {
 
     gameLoop(deltaTime) {
         this.combat.gameLoop(deltaTime);
+    }
+
+    // #################################################
+    //   DAMAGE PLAYER
+    // #################################################
+
+    #damagePlayer(ammount) {
+        this.global.run.hp = Math.max(0, this.global.run.hp - ammount);
+        this.#updateHealthUI();
+
+        if (this.global.run.hp <= 0) console.log("PLAYER DEAD");
     }
 
     // #################################################

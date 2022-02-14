@@ -90,7 +90,7 @@ export default class Card {
     }
 
     #instantiateCard() {
-        const { type, name, artID, mana, text } = this.cardInfo;
+        const { type, name, artId, mana, text } = this.cardInfo;
 
         const nameTextStyle = {
             fontFamily: "Hand",
@@ -133,7 +133,7 @@ export default class Card {
         this.initialHeight.card = this.elements.card.height;
 
         // ART
-        this.elements.art = PIXI.Sprite.from(this.global.app.loader.resources[artID].texture);
+        this.elements.art = PIXI.Sprite.from(this.global.app.loader.resources[artId].texture);
         this.elements.art.anchor.set(0.5);
         this.initialWidth.art = this.elements.art.width;
 
