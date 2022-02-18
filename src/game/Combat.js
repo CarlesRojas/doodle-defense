@@ -75,7 +75,7 @@ export default class Combat {
 
     #handleWaveFinished() {
         if (this.global.combat.nextWaveIndex >= this.global.combat.info.waves.length)
-            return console.log("COMBAT VCTORY"); // ROJAS THIS SHOULD TRIGGER WHEN ALL THE ENEMIES OF THE LAST WAVE DIE
+            return console.log("COMBAT VCTORY"); // ROJAS Do something here
 
         // Update UI
         this.#setNextWaveUI(true);
